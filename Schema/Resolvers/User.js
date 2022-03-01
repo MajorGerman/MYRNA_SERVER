@@ -1,6 +1,13 @@
+// import db element 
+
 const UserResolvers = { 
     Query: { 
-        getAllUsers: () => "hey"
+        getAllUsers: async () => {}
+            
+        },
+        getUserById: async (_, { id }) => { 
+
+        }
     }
 }
 

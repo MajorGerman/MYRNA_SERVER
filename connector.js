@@ -6,5 +6,6 @@ var con = mysql.createConnection({
     password: "id7B3V3qax",
     database: "sql11476086"
   });
+con.connect();
 
 module.exports = {con} 

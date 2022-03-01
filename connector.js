@@ -1,11 +1,17 @@
-var mysql = require('mysql');
+var mysql = require('mysql2');
 
-var con = mysql.createConnection({
-    host: "sql11.freesqldatabase.com",
+const pool = mysql.createPool({
+    host: "sql11.freesqldatabase.com", 
     user: "sql11476086",
     password: "id7B3V3qax",
-    database: "sql11476086"
+    database: "sql11476086",
+    connectionLimit: 100
   });
-con.connect();
 
-module.exports = {con} 
+
+(function(){
+
+})()
+
+module.exports = {pool} 
+

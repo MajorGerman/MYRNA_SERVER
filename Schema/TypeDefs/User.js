@@ -1,24 +1,24 @@
 const { gql } = require("apollo-server-express");
 const UserTypes = gql`
     type Tag { 
-        id: Int!
-        name: String!
+        id: Int
+        name: String
     }
     type User {
         id: Int!
         email: String!
-        first_name: String!
-        last_name: String!
+        firstName: String!
+        lastName: String!
         hashedPassword: String!
-        salt: Int!
+        salt: String!
         birthday: String!
-        location: String! 
-        tags: [Tag!]!
+        location: String!
+        tags: [Tag]
     }
     
     type Query { 
-        getAllUsers: User!
-        getUserById(id: ID): [User!]!
+        getAllUsers: [User!]!
+        getUserById(id: ID): User!
     }
 `
 

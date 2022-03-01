@@ -1,4 +1,4 @@
-let con = require("../connector.js")
+let con = require("../../connector");
 
 const UserResolvers = { 
     Query: { 

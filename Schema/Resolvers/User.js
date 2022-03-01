@@ -2,7 +2,7 @@
 
 const UserResolvers = { 
     Query: { 
-        getAllUsers: async () => {}
+        getAllUsers: async () => {
             
         },
         getUserById: async (_, { id }) => { 

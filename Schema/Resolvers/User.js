@@ -3,46 +3,50 @@ let sql = require ("mysql2/promise");
 const UserResolvers = { 
     Query: { 
         getAllUsers: async () => {
-            let final_result;
-            let promise = pool.promise();
-            let [rows,fields]  = await promise.query(`SELECT * FROM users ` );
+            let conn = await pool.getConnection()
+            let res = await conn.query(`SELECT * FROM users ` );
+            conn.release()
+            let result = res[0];
+            
             //console.log(rows)
-            for (i of rows){
+            for (i of result){
                 i.hashedPassword = i.hashedPassword.toString();
                 i.salt = i.salt.toString();  
             }
 
-            result = rows
-            for (let i = 0; i < rows.length; i++){
-                let promise = pool.promise();
-                let [rows2, fields]   = await promise.execute(`
+            for (let i = 0; i < result.length; i++){
+                let conn = await pool.getConnection()
+                let res2 = await conn.query(`
                 SELECT tags.id, tags.name FROM subscriptions 
                 INNER JOIN tags ON tags.id = subscriptions.tag_id
-                WHERE user_id = ${rows[i].id}
+                WHERE user_id = ${result[i].id}
                 `);
-                console.log(rows2)
-                rows[i].tags = rows2
+                conn.release()
+
+                result[i].tags = res2[0]
             }
-            console.log(rows)
-            return rows;
+            return result;
         },
         getUserById: async (_, { id }) => { 
-            let promise = pool.promise();
-            let [rows,fields]  = await promise.query(`SELECT * FROM users WHERE id = ${id}` );
-            console.log(rows)
-            i.hashedPassword = i.hashedPassword.toString();
-            i.salt = i.salt.toString();  
+            let conn = await pool.getConnection();
+            let res = await conn.query(`SELECT * FROM users WHERE id = ${id}` );
+            conn.release();
+            data = res[0][0];
+            console.log(data)
 
-            promise = pool.promise();
+            data.hashedPassword = data.hashedPassword.toString();
+            data.salt = data.salt.toString();  
 
-            [rows2, fields2]   = await promise.execute(`
+            conn = await pool.getConnection();
+
+            res2 = await conn.query(`
             SELECT tags.id, tags.name FROM subscriptions 
             INNER JOIN tags ON tags.id = subscriptions.tag_id
             WHERE user_id = ${id}
             `);
-            rows.tags = rows2
-            console.log(rows)
-            return rows;
+
+            data.tags = res[0]
+            return data;
         }
             
     }

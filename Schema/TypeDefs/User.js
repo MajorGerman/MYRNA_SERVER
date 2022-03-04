@@ -27,7 +27,7 @@ const UserTypes = gql`
     
     type Query { 
         getAllUsers: [User_client!]!
-        getUserById(id: ID): User!
+        getUserById(id: ID): User_client!
         loginUser(email: String! , pass: String!): Token!
         validateToken(id: Int!, password: String!): Boolean!
     }

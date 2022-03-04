@@ -67,7 +67,6 @@ const UserResolvers = {
         validateToken: async (_, {id, password}) => {
 
             data = await queryTool.getOne (pool,`SELECT id, hash, hashedToken FROM sessions WHERE id = '${id}'`);
-            console.log(data)
             if (passwordGenerator.validatePassword(password, data.hash, data.hashedToken) ) {
                 await queryTool.insert (pool, `UPDATE sessions SET lastLogin = NOW() WHERE id = ${id}`)
                 return true
@@ -99,9 +98,11 @@ const UserResolvers = {
         },
         deleteToken: async (_,{id}) => {
             await queryTool.insert(pool, `DELETE FROM sessions WHERE id = ${id}`)
+            return true
         },
         deleteExpiredToken: async () => {
             await queryTool.insert(pool, `DELETE FROM sessions WHERE DATEDIFF(lastLogin, NOW()) > 14`)
+            return 0
         },
     }
 }

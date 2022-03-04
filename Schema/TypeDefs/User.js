@@ -34,7 +34,7 @@ const UserTypes = gql`
     type Mutation {
         addNewUser(email: String!, firstName: String!, lastName: String!,pass: String!, birthday:String!):User
         deleteToken(tokenId: Int!): Boolean!
-        deleteExpiredToken(tokenId: Int!): Int!
+        deleteExpiredTokens: Int!
     }
     type Token {
         id: Int!

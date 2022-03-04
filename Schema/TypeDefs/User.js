@@ -28,15 +28,17 @@ const UserTypes = gql`
     type Query { 
         getAllUsers: [User_client!]!
         getUserById(id: ID): User!
-        loginUser(email: String! , pass: String!): Boolean
+        loginUser(email: String! , pass: String!): Token!
+        validateToken(id: Int!, password: String!): Boolean!
     }
     type Mutation {
         addNewUser(email: String!, firstName: String!, lastName: String!,pass: String!, birthday:String!):User
     }
-    type Error {
-        err: Boolean!
-        code: Int!
-        description: String!
+    type Token {
+        id: Int!
+        password: String!
+        dateTaken: String!
+        lastLogin: String!
     }
 `
 

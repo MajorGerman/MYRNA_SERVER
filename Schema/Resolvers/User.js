@@ -3,13 +3,13 @@ let sql = require ("mysql2/promise");
 const crypto = require('crypto');
 const { Buffer } = require('buffer');
 const passwordGenerator = require('../../tools/PasswordGeneratorTool')
+const queryTool = require('../../tools/QueryTool')
+const responseGenerator = require('../../tools/ResponseGenerator')
 const UserResolvers = { 
     Query: { 
         getAllUsers: async () => {
-            let conn = await pool.getConnection()
-            let res = await conn.query(`SELECT * FROM users ` );
-            conn.release()
-            let result = res[0];
+
+            let result = await queryTool.getMany(pool,`SELECT * FROM users `)
             
             //console.log(rows)
             for (i of result){
@@ -18,51 +18,62 @@ const UserResolvers = {
             }
 
             for (let i = 0; i < result.length; i++){
-                let conn = await pool.getConnection()
-                let res2 = await conn.query(`
-                SELECT tags.id, tags.name FROM subscriptions 
+                let tags = await queryTool.getMany (pool, 
+                `SELECT tags.id, tags.name FROM subscriptions 
                 INNER JOIN tags ON tags.id = subscriptions.tag_id
-                WHERE user_id = ${result[i].id}
-                `);
-                conn.release()
-
-                result[i].tags = res2[0]
+                WHERE user_id = ${result[i].id}`)
+                result[i].tags = tags
             }
             return result;
         },
         getUserById: async (_, { id }) => { 
-            let conn = await pool.getConnection();
-            let res = await conn.query(`SELECT * FROM users WHERE id = ${id}` );
-            conn.release();
-            data = res[0][0];
-            console.log(data)
+            let data = await queryTool.getOne (pool, `SELECT * FROM users WHERE id = ${id}` )
 
             data.hashedPassword = data.hashedPassword.toString();
             data.salt = data.salt.toString();  
 
-            conn = await pool.getConnection();
-
-            res2 = await conn.query(`
+            let tags = await queryTool.getMany(pool,`
             SELECT tags.id, tags.name FROM subscriptions 
             INNER JOIN tags ON tags.id = subscriptions.tag_id
             WHERE user_id = ${id}
-            `);
-
-            data.tags = res[0]
+            `)
+            data.tags = tags
             return data;
         },
         loginUser: async (_, { email, pass }) => { 
-            let conn = await pool.getConnection();
-            let [data, fields] = await conn.query(`SELECT id FROM users WHERE email = '${email}'`);
-            conn.release();
+            let data = await queryTool.getOne (pool,`SELECT id FROM users WHERE email = '${email}'`)
 
-            if (data.length == 0) return false;
-            conn = await pool.getConnection();
-            [data, fields] = await conn.query(`SELECT salt, hashedPassword FROM users WHERE email = '${email}'`);
-            conn.release();
-            data = data[0];
-            return passwordGenerator.validatePassword(pass, data.salt, data.hashedPassword)
+            if (!data) throw Error('wrong email or password');
+            if (data.length == 0) throw Error('wrong email');
+            let user_id = data.id;
 
+            data = await queryTool.getOne (pool,`SELECT id, salt, hashedPassword FROM users WHERE email = '${email}'`)
+
+            if ( !passwordGenerator.validatePassword(pass, data.salt, data.hashedPassword) ) throw Error('wrong email or password');
+
+            let [hashedPassword, salt, passwordString] = passwordGenerator.generateHashedPasswordAndSaltWithoutString();
+
+            await queryTool.insert(pool, `INSERT INTO sessions (user_id, hash, hashedToken) VALUES (${user_id}, 0x${salt}, 0x${hashedPassword})`);
+
+            data = await queryTool.getOne(pool, `SELECT id, dateTaken, lastLogin FROM sessions WHERE id = LAST_INSERT_ID()`)
+
+            return {
+                'id': data.id,
+                'password': passwordString,
+                'dateTaken': data.dateTaken,
+                'lastLogin': data.lastLogin
+            }
+        },
+        validateToken: async (_, {id, password}) => {
+
+            data = await queryTool.getOne (pool,`SELECT id, hash, hashedToken FROM sessions WHERE id = '${id}'`);
+            console.log(data)
+            if (passwordGenerator.validatePassword(password, data.hash, data.hashedToken) ) {
+                await queryTool.insert (pool, `UPDATE sessions SET lastLogin = NOW() WHERE id = ${id}`)
+                return true
+            } else {
+                return false
+            }
             
         }
             
@@ -70,23 +81,21 @@ const UserResolvers = {
     Mutation: {
         addNewUser: async (_,{email, firstName, lastName,pass, birthday}) => {
 
-            stringKey, salt = passwordGenerator.generateHashedPasswordAndSalt(pass);
+            let res = await queryTool.getMany(pool, `SELECT * FROM users WHERE email = '${email}'` );
+            if (res.length > 0){
+                throw Error("This email already exists");
+            } 
 
-            return pool.getConnection().then( (conn) =>{
-                return conn.query(`INSERT INTO users 
+            let [stringKey, salt] = await passwordGenerator.generateHashedPasswordAndSalt(pass);
+            await queryTool.insert(pool,
+                `INSERT INTO users 
                 (email, hashedPassword, salt, firstName, lastName, birthday, location) VALUES
                 ('${email}',0x${stringKey},0x${salt},'${firstName}','${lastName}','${birthday}','lol')`)
-                .then((res) => {
-                    return conn.query(`SELECT * FROM users WHERE id= LAST_INSERT_ID()`)
-                    .then( ([data, fields]) => {
-                        conn.release()
-                        delete data[0].salt;
-                        delete data[0].hashedPassword;
-                        console.log(data[0])
-                        return data[0]; 
-                    })
-                })
-            });
+
+            res = await queryTool.getOne(pool, `SELECT * FROM users WHERE id= LAST_INSERT_ID()` );
+            delete res.salt;
+            delete res.hashedPassword;
+            return res;
         }
     }
 }

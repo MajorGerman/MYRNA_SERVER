@@ -96,7 +96,13 @@ const UserResolvers = {
             delete res.salt;
             delete res.hashedPassword;
             return res;
-        }
+        },
+        deleteToken: async (_,{id}) => {
+            await queryTool.insert(pool, `DELETE FROM sessions WHERE id = ${id}`)
+        },
+        deleteExpiredToken: async () => {
+            await queryTool.insert(pool, `DELETE FROM sessions WHERE DATEDIFF(lastLogin, NOW()) > 14`)
+        },
     }
 }
 

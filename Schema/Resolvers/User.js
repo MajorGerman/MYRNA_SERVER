@@ -67,6 +67,9 @@ const UserResolvers = {
         validateToken: async (_, {id, password}) => {
 
             data = await queryTool.getOne (pool,`SELECT id, hash, hashedToken FROM sessions WHERE id = '${id}'`);
+            
+            if (!data || data.length == 0) return false
+
             if (passwordGenerator.validatePassword(password, data.hash, data.hashedToken) ) {
                 await queryTool.insert (pool, `UPDATE sessions SET lastLogin = NOW() WHERE id = ${id}`)
                 return true

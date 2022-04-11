@@ -9,8 +9,8 @@ const UserTypes = gql`
         email: String!
         firstName: String!
         lastName: String!
-        hashedPassword: String!
-        salt: String!
+        hashedPassword: String
+        salt: String
         birthday: String!
         location: String
         tags: [Tag]

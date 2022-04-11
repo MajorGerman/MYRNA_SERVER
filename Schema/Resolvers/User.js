@@ -29,6 +29,9 @@ const UserResolvers = {
         getUserById: async (_, { id }) => { 
             let data = await queryTool.getOne (pool, `SELECT * FROM users WHERE id = ${id}` )
 
+            if (!data){
+                throw Error("No such user")
+            }
             data.hashedPassword = data.hashedPassword.toString();
             data.salt = data.salt.toString();  
 
@@ -82,7 +85,30 @@ const UserResolvers = {
     },
     Mutation: {
         addNewUser: async (_,{email, firstName, lastName,pass, birthday}) => {
-
+            if (email.length > 50){
+                throw Error('Email is too long')
+            }
+            if (! /^[a-zA-Z0-9.!#$%&’*+\=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/.test(email)){
+                throw Error('Invalid Email')
+            }
+            if (pass.length <= 8){
+                throw Error('Password too short')
+            }
+            if (! /(?:(?:31(\/|-|\.)(?:0?[13578]|1[02]))\1|(?:(?:29|30)(\/|-|\.)(?:0?[13-9]|1[0-2])\2))(?:(?:1[6-9]|[2-9]\d)?\d{2})$|^(?:29(\/|-|\.)0?2\3(?:(?:(?:1[6-9]|[2-9]\d)?(?:0[48]|[2468][048]|[13579][26])|(?:(?:16|[2468][048]|[3579][26])00))))$|^(?:0?[1-9]|1\d|2[0-8])(\/|-|\.)(?:(?:0?[1-9])|(?:1[0-2]))\4(?:(?:1[6-9]|[2-9]\d)?\d{2})/.test(birthday)){
+                throw Error('Invalid date')
+            }
+            if (firstName.length > 40){
+                throw Error('First name is too long')
+            }
+            if (lastName.length > 40){
+                throw Error('Last name is too long')
+            }           
+            if (!/([A-Za-z-])/.test(firstName)){
+                throw Error("Invalid first name")
+            } 
+            if (!/([A-Za-z-])/.test(lastName)){
+                throw Error("Invalid last name")
+            } 
             let res = await queryTool.getMany(pool, `SELECT * FROM users WHERE email = '${email}'` );
             if (res.length > 0){
                 throw Error("This email already exists");
@@ -95,12 +121,12 @@ const UserResolvers = {
                 ('${email}',0x${stringKey},0x${salt},'${firstName}','${lastName}','${birthday}','lol')`)
 
             res = await queryTool.getOne(pool, `SELECT * FROM users WHERE id= LAST_INSERT_ID()` );
-            delete res.salt;
-            delete res.hashedPassword;
+            res.salt = res.salt.toString('hex');
+            res.hashedPassword = res.hashedPassword.toString('hex');
             return res;
         },
-        deleteToken: async (_,{id}) => {
-            await queryTool.insert(pool, `DELETE FROM sessions WHERE id = ${id}`)
+        deleteToken: async (_,{tokenId}) => {
+            await queryTool.insert(pool, `DELETE FROM sessions WHERE id = ${tokenId}`)
             return true
         },
         deleteExpiredTokens: async () => {

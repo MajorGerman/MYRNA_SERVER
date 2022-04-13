@@ -5,7 +5,7 @@ const express = require("express");
 const http = require("http")
 
 
-const PORT = process.env.port;
+const PORT = 4000;
 
 
 // importing types 

@@ -18,7 +18,6 @@ const { UserResolvers } = require('./Schema/Resolvers/User');
 const schema = makeExecutableSchema({ 
     typeDefs:  [ UserTypes ], 
     resolvers: [ UserResolvers ],
-    introspection: true
 })
 
 const startApolloServer = async (schema) => { 
@@ -28,7 +27,8 @@ const startApolloServer = async (schema) => {
         schema,
         plugins: [
             ApolloServerPluginDrainHttpServer({ httpServer })
-        ]
+        ],
+        introspection: true
     });
 
     await server.start() 

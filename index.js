@@ -5,7 +5,7 @@ const express = require("express");
 const http = require("http")
 
 
-const PORT = 4000;
+const PORT = process.env.port;
 
 
 // importing types 
@@ -32,9 +32,9 @@ const startApolloServer = async (schema) => {
 
     await server.start() 
     server.applyMiddleware({ app, path: '/' }); 
-    httpServer.listen({ port: process.env.PORT || 4000 }).then(({ url }) => {
-        console.log(`Server is ready at ${url}`)
-        })
+    await httpServer.listen(PORT, () => { 
+        console.log("Server succesfully started")
+    })
 }
 
 startApolloServer(schema);

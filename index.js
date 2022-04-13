@@ -17,7 +17,8 @@ const { UserResolvers } = require('./Schema/Resolvers/User');
 // defining schema 
 const schema = makeExecutableSchema({ 
     typeDefs:  [ UserTypes ], 
-    resolvers: [ UserResolvers ]
+    resolvers: [ UserResolvers ],
+    introspection: true
 })
 
 const startApolloServer = async (schema) => { 

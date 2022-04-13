@@ -26,7 +26,7 @@ const UserTypes = gql`
     type Comment {
         id: Int!
         post: Post!
-        author: User!
+        author: User
         content: String!
     }
     

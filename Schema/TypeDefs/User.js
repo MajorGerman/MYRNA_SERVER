@@ -13,28 +13,43 @@ const UserTypes = gql`
         salt: String
         birthday: String!
         location: String
-        tags: [Tag]
+        subscriptions: [User]
+        posts: [Post]
+        comments: [Comment]
     }
-    type User_client {
+    type Post {
         id: Int!
-        email: String!
-        firstName: String!
-        lastName: String!
-        birthday: String!
-        location: String
-        tags: [Tag]
+        author: User!
+        content: String!
+        comments: [Comment]
+    }
+    type Comment {
+        id: Int!
+        post: Post!
+        author: User!
+        content: String!
     }
     
     type Query { 
-        getAllUsers: [User_client!]!
-        getUserById(id: ID): User_client!
+        getAllUsers: [User]
+        getUserById(id: ID): User
+
         loginUser(email: String! , pass: String!): Token!
         validateToken(id: Int!, password: String!): Boolean!
+
+        getAllPosts: [Post]
+        getPostById(id: Int): Post
+
     }
     type Mutation {
         addNewUser(email: String!, firstName: String!, lastName: String!,pass: String!, birthday:String!):User
         deleteToken(tokenId: Int!): Boolean!
         deleteExpiredTokens: Int!
+
+        addNewPost(user_id: Int!, header: String!, content: String!): Post
+        addNewComment(user_id: Int!, post_id: Int!, content: String!): Comment
+        
+        addNewSubscription(user_id: Int!, subscribed_id: Int!) : Boolean
     }
     type Token {
         id: Int!

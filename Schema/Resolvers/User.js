@@ -17,13 +17,6 @@ const UserResolvers = {
                 i.salt = i.salt.toString();  
             }
 
-            for (let i = 0; i < result.length; i++){
-                let tags = await queryTool.getMany (pool, 
-                `SELECT tags.id, tags.name FROM subscriptions 
-                INNER JOIN tags ON tags.id = subscriptions.tag_id
-                WHERE user_id = ${result[i].id}`)
-                result[i].tags = tags
-            }
             return result;
         },
         getUserById: async (_, { id }) => { 
@@ -35,12 +28,6 @@ const UserResolvers = {
             data.hashedPassword = data.hashedPassword.toString();
             data.salt = data.salt.toString();  
 
-            let tags = await queryTool.getMany(pool,`
-            SELECT tags.id, tags.name FROM subscriptions 
-            INNER JOIN tags ON tags.id = subscriptions.tag_id
-            WHERE user_id = ${id}
-            `)
-            data.tags = tags
             return data;
         },
         loginUser: async (_, { email, pass }) => { 
@@ -133,8 +120,66 @@ const UserResolvers = {
             await queryTool.insert(pool, `DELETE FROM sessions WHERE DATEDIFF(lastLogin, NOW()) > 14`)
             return 0
         },
+        addNewPost: async (_,{user_id, header, content}) => {
+            await queryTool.insert(pool,
+                `INSERT INTO posts
+                (user_id, header, content) VALUES
+                (${user_id}, '${header}','${content}')`)
+            return await queryTool.getOne(pool, `SELECT * FROM posts WHERE id= LAST_INSERT_ID()` );
+        },
+        addNewComment: async (_,{user_id, post_id, content}) => {
+            await queryTool.insert(pool,
+                `INSERT INTO comments
+                (post_id ,user_id, content) VALUES
+                (${post_id}, ${user_id},'${content}')`)
+            return await queryTool.getOne(pool, `SELECT * FROM comments WHERE id= LAST_INSERT_ID()` );
+        },
+        addNewSubscription: async (_,{user_id, subscribed_id}) => {
+            await queryTool.insert(pool,
+                `INSERT INTO subscriptions
+                (user_id ,subscribed_id) VALUES
+                (${user_id},${subscribed_id})`)
+            return true
+        },
+    },
+    User: {
+        subscriptions: async  (user) =>{
+            res = await queryTool.getMany(pool, `SELECT * FROM users WHERE users.id IN (SELECT subscribed_id FROM subscriptions WHERE user_id = ${user.id})`)
+            for (i of res){
+                i.hashedPassword = i.hashedPassword.toString();
+                i.salt = i.salt.toString();  
+            }
+            return res
+        },
+        posts:async  (user) => {
+            res = await queryTool.getMany(pool, `SELECT * FROM posts WHERE user_id = ${user.id}`)
+            for (i of res){
+                i.hashedPassword = i.hashedPassword.toString();
+                i.salt = i.salt.toString();  
+            }
+            return res
+        },
+        comments:async  (user) => {
+            res = await queryTool.getMany(pool, `SELECT * FROM comments WHERE user_id = ${user.id}`)
+            for (i of res){
+                i.hashedPassword = i.hashedPassword.toString();
+                i.salt = i.salt.toString();  
+            }
+            return res
+        }
+    },
+    Post: {
+        comments: async  (post) => {
+            return await queryTool.getMany(pool, `SELECT * FROM comments WHERE post_id = ${post.id}`)
+        }
+    },
+    Comment: {
+        author: async  (comment) => {
+            return await queryTool.getOne(pool, `SELECT * FROM users WHERE id = ${comment.user_id}`)
+        }
     }
 }
+
 
 
 module.exports = { 

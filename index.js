@@ -13,11 +13,12 @@ const { UserTypes } = require('./Schema/TypeDefs/User');
 
 //importing resolvers 
 const { UserResolvers } = require('./Schema/Resolvers/User');
+const { PostResolvers } = require('./Schema/Resolvers/Post');
 
 // defining schema 
 const schema = makeExecutableSchema({ 
     typeDefs:  [ UserTypes ], 
-    resolvers: [ UserResolvers ],
+    resolvers: [ UserResolvers , PostResolvers],
 })
 
 const startApolloServer = async (schema) => { 

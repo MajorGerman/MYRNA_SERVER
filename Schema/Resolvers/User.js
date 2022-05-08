@@ -156,18 +156,10 @@ const UserResolvers = {
         },
         posts:async  (user) => {
             res = await queryTool.getMany(pool, `SELECT * FROM posts WHERE user_id = ${user.id}`)
-            for (i of res){
-                i.hashedPassword = i.hashedPassword.toString();
-                i.salt = i.salt.toString();  
-            }
             return res
         },
         comments:async  (user) => {
             res = await queryTool.getMany(pool, `SELECT * FROM comments WHERE user_id = ${user.id}`)
-            for (i of res){
-                i.hashedPassword = i.hashedPassword.toString();
-                i.salt = i.salt.toString();  
-            }
             return res
         }
     },

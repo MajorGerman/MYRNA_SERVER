@@ -1,4 +1,5 @@
 const { gql } = require("apollo-server-express");
+
 const UserTypes = gql`
     type Tag { 
         id: Int
@@ -6,57 +7,44 @@ const UserTypes = gql`
     }
     type User {
         id: Int!
-        email: String!
-        firstName: String!
-        lastName: String!
-        hashedPassword: String
-        salt: String
-        birthday: String!
+        email: String! 
+        first_name: String!
+        last_name: String!
+        birthday: String
         location: String
         subscriptions: [User]
+        subscribed: [User]
         posts: [Post]
         comments: [Comment]
+        roles: [Role]
     }
-    type Post {
-        id: Int!
-        author: User!
-        content: String!
-        comments: [Comment]
+    type AuthPayload {
+        token: String!
+        user: User!
     }
-    type Comment {
-        id: Int!
-        post: Post!
-        author: User
-        content: String!
+
+    enum Role{
+        USER,
+        MANAGER,
+        ADMIN
     }
     
     type Query { 
         getAllUsers: [User]
-        getUserById(id: ID): User
-
-        loginUser(email: String! , pass: String!): Token!
-        validateToken(id: Int!, password: String!): Boolean!
-
-        getAllPosts: [Post]
-        getPostById(id: Int): Post
+        getUserById(id: Int!): User
+        me: User! 
 
     }
     type Mutation {
-        addNewUser(email: String!, firstName: String!, lastName: String!,pass: String!, birthday:String!):User
-        deleteToken(tokenId: Int!): Boolean!
-        deleteExpiredTokens: Int!
+        signup(email: String!, password: String!, first_name: String!, last_name: String!,): AuthPayload
+        signin(email: String!, password: String!): AuthPayload
 
-        addNewPost(user_id: Int!, header: String!, content: String!): Post
-        addNewComment(user_id: Int!, post_id: Int!, content: String!): Comment
-        
+        changeMyself(id: Int!, password: String!, email: String, first_name: String, last_name: String, birthday: String, location: String): User
+
+        changeUserRoles(id: Int!, roles: [Int]): User
         addNewSubscription(user_id: Int!, subscribed_id: Int!) : Boolean
     }
-    type Token {
-        id: Int!
-        password: String!
-        dateTaken: String!
-        lastLogin: String!
-    }
+    
 `
 
 module.exports = { 

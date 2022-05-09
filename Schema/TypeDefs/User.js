@@ -36,7 +36,7 @@ const UserTypes = gql`
 
     }
     type Mutation {
-        signup(email: String!, password: String!, first_name: String!, last_name: String!,): AuthPayload
+        signup(email: String!, password: String!, first_name: String!, last_name: String!): AuthPayload
         signin(email: String!, password: String!): AuthPayload
 
         changeMyself(id: Int!, password: String!, email: String, first_name: String, last_name: String, birthday: String, location: String): User

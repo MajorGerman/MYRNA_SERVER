@@ -61,17 +61,19 @@ const UserResolvers = {
 
             let [stringKey, salt] = await passwordGenerator.generateHashedPasswordAndSalt(password);
             try{
-            await queryTool.insert(pool,
-                `INSERT INTO users 
+                let q = `INSERT INTO users 
                 (email, hashed_password, salt, first_name, last_name) VALUES
-                ('${email}',0x${stringKey},0x${salt},'${first_name}','${last_name}')`)
+                ('${email}',0x${stringKey},0x${salt},'${first_name}','${last_name}')`
 
-            }catch (err){
+                console.log(q)
+            await queryTool.insert(pool,q)
+
+            } catch (err) {
                 console.log(err)
             }
 
             try{
-                res = await queryTool.getMany(pool, `SELECT id, email, hashed_password, salt, first_name, last_name FROM users WHERE id= LAST_INSERT_ID()` )[0];
+                res = await queryTool.getOne(pool, `SELECT id, email, hashed_password, salt, first_name, last_name FROM users WHERE id= LAST_INSERT_ID()` );
                 console.log(res)
                 await queryTool.insert(pool, `INSERT INTO user_roles (user_id, role_id) VALUES (${res.id}, ${1})` )
             } catch (err){

@@ -71,7 +71,7 @@ const UserResolvers = {
             }
 
             try{
-                res = await queryTool.getOne(pool, `SELECT id, email, hashed_password, salt, first_name, last_name FROM users WHERE id= LAST_INSERT_ID()` );
+                res = await queryTool.getMany(pool, `SELECT id, email, hashed_password, salt, first_name, last_name FROM users WHERE id= LAST_INSERT_ID()` )[0];
                 console.log(res)
                 await queryTool.insert(pool, `INSERT INTO user_roles (user_id, role_id) VALUES (${res.id}, ${1})` )
             } catch (err){

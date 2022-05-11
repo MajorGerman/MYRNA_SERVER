@@ -65,10 +65,17 @@ const UserResolvers = {
                 (email, hashed_password, salt, first_name, last_name) VALUES
                 ('${email}',0x${stringKey},0x${salt},'${first_name}','${last_name}')`)
 
-            res = await queryTool.getOne(pool, `SELECT id, email, hashed_password, salt, first_name, last_name FROM users WHERE id= LAST_INSERT_ID()` );
+            try{
+                res = await queryTool.getOne(pool, `SELECT id, email, hashed_password, salt, first_name, last_name FROM users WHERE id= LAST_INSERT_ID()` );
 
-            await queryTool.insert(pool, `INSERT INTO user_roles (user_id, role_id) VALUES (${res.id}, ${1})` )
-            const token = sign({user_id: res.id}, process.env.SECRET_WORD)
+                await queryTool.insert(pool, `INSERT INTO user_roles (user_id, role_id) VALUES (${res.id}, ${1})` )
+            } catch (err){
+                console.log(err)
+            }
+            
+
+            console.log(res)
+            const token = sign({"user_id": res.id}, process.env.SECRET_WORD)
 
             const auth = {token: token, user: res }
             return auth

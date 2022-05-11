@@ -60,10 +60,15 @@ const UserResolvers = {
             } 
 
             let [stringKey, salt] = await passwordGenerator.generateHashedPasswordAndSalt(password);
+            try{
             await queryTool.insert(pool,
                 `INSERT INTO users 
                 (email, hashed_password, salt, first_name, last_name) VALUES
                 ('${email}',0x${stringKey},0x${salt},'${first_name}','${last_name}')`)
+
+            }catch (err){
+                console.log(err)
+            }
 
             try{
                 res = await queryTool.getOne(pool, `SELECT id, email, hashed_password, salt, first_name, last_name FROM users WHERE id= LAST_INSERT_ID()` );

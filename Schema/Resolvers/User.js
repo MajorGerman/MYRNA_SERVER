@@ -154,6 +154,15 @@ const UserResolvers = {
         
     },
     User: {
+        id: async (user_id) =>{
+            let data = await queryTool.getOne (pool, `SELECT * FROM users WHERE id = ${user_id}` )
+
+            if (!data){
+                throw Error("No such user")
+            }
+
+            return data.id;
+        },
         email: async  (user) => {
             let data = await queryTool.getOne (pool, `SELECT * FROM users WHERE id = ${user.id}` )
 

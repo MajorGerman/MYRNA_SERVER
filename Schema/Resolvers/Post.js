@@ -4,7 +4,9 @@ const PostResolvers = {
     Query: {
         getAllPosts: async () => {
             let result = await queryTool.getMany(pool,`SELECT * FROM posts `)
-            result.user = {id:result.author };
+            for (i in result){
+                i.user = {"id" : i.author };
+            }
             return result;
         },
         getPostById: async (_,{id}) => {

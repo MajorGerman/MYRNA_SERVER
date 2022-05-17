@@ -51,6 +51,12 @@ const PostResolvers = {
                 (${user_id},${subscribed_id})`)
             return true
         },
+        likePost: async (_, {user_id, post_id})=> {
+            await queryTool.insert(pool, 
+                `UPDATE posts 
+                SET likes = (SELECT likes FROM posts WHERE id = ${post_id}) + 1
+                WHERE id = ${post_id}`)
+        }
     },
     Post: {
             comments: async  (post) => {
@@ -62,7 +68,7 @@ const PostResolvers = {
                 return data
             },
             likes: async (post) =>{
-                return post.id
+                return post.likes || 0
             }
         },
     Comment: {

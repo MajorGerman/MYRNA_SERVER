@@ -3,7 +3,7 @@ const {pool} = require("../../connector");
 const PostResolvers = { 
     Query: {
         getAllPosts: async () => {
-            let result = await queryTool.getMany(pool,`SELECT * FROM posts `)
+            let result = await queryTool.getMany(pool,`SELECT * FROM posts ORDER BY id DESC`)
             for (i of result){
                 i.user = {"id" : i.author };
             }
@@ -64,7 +64,7 @@ const PostResolvers = {
         },
     Comment: {
             author: async  (comment) => {
-                return await queryTool.getOne(pool, `SELECT * FROM users WHERE id = ${comment.user_id}`)
+                return await queryTool.getOne(pool, `SELECT * FROM users WHERE id = (SELECT author FROM comments WHERE id = ${comment.id})`)
             },
             post: async (comment) => {
                 return await queryTool.getOne(pool, `SELECT * FROM posts WHERE id = ${comment.post_id}`)

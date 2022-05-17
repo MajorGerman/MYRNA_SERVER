@@ -5,6 +5,7 @@ const PostTypes = gql`
         author: User!
         header: String!
         content: String!
+        likes: Int
         comments: [Comment]
     }
     type Comment {

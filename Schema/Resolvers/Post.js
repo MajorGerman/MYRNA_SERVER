@@ -60,6 +60,9 @@ const PostResolvers = {
                 data = await queryTool.getOne(pool, `SELECT * FROM users WHERE id = (SELECT author FROM posts WHERE id = ${post.id})`)
     
                 return data
+            },
+            likes: async (post) =>{
+                return post.id
             }
         },
     Comment: {

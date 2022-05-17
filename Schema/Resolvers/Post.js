@@ -30,7 +30,7 @@ const PostResolvers = {
         addNewPost: async (_,{user_id, header, content}) => {
             await queryTool.insert(pool,
                 `INSERT INTO posts
-                (user_id, header, content) VALUES
+                (author, header, content) VALUES
                 (${user_id}, '${header.replaceAll("'", "''")}','${content.replaceAll("'", "''")}')`)
 
             return  await queryTool.getOne(pool, `SELECT * FROM posts WHERE id= LAST_INSERT_ID()` );
@@ -40,7 +40,7 @@ const PostResolvers = {
         addNewComment: async (_,{user_id, post_id, content}) => {
             await queryTool.insert(pool,
                 `INSERT INTO comments
-                (post_id ,user_id, content) VALUES
+                (post_id ,author, content) VALUES
                 (${post_id}, ${user_id},'${content.replaceAll("'", "''")}')`)
             return await queryTool.getOne(pool, `SELECT * FROM comments WHERE id= LAST_INSERT_ID()` );
         },

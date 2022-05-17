@@ -4,10 +4,10 @@ const PostResolvers = {
     Query: {
         getAllPosts: async () => {
             let result = await queryTool.getMany(pool,`SELECT * FROM posts `)
-            console.log(result);
             for (i of result){
                 i.user = {"id" : i.author };
             }
+            console.log(result);
             return result;
         },
         getPostById: async (_,{id}) => {
@@ -57,10 +57,8 @@ const PostResolvers = {
                 return await queryTool.getMany(pool, `SELECT * FROM comments WHERE post_id = ${post.id}`)
             },
             author: async (post) =>{
-                data = await queryTool.getOne(pool, `SELECT * FROM users WHERE id = ${post.user_id}`)
+                data = await queryTool.getOne(pool, `SELECT * FROM users WHERE id = (SELECT author FROM posts WHERE id = ${post.id})`)
     
-                data.hashedPassword = data.hashedPassword.toString();
-                data.salt = data.salt.toString();  
                 return data
             }
         },

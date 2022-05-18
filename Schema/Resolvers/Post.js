@@ -56,6 +56,7 @@ const PostResolvers = {
                 `UPDATE posts 
                 SET likes = (SELECT likes FROM posts WHERE id = ${post_id}) + 1
                 WHERE id = ${post_id}`)
+            return true
         }
     },
     Post: {

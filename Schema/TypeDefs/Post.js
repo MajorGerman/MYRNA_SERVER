@@ -24,6 +24,7 @@ const PostTypes = gql`
     type Mutation{
         addNewPost(user_id: Int!, header: String!, content: String!): Post
         addNewComment(user_id: Int!, post_id: Int!, content: String!): Comment
+        likePost(user_id: Int!,post_id: Int! ): boolean
     }
 `
 module.exports = { 

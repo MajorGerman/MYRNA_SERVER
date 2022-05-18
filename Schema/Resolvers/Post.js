@@ -52,11 +52,16 @@ const PostResolvers = {
             return true
         },
         likePost: async (_, {user_id, post_id})=> {
-            await queryTool.insert(pool, 
+            try {
+                await queryTool.insert(pool, 
                 `UPDATE posts 
                 SET likes = likes + 1
                 WHERE id = ${post_id}`)
-            return true
+                return true
+            } catch (err){
+                return false
+            }
+            
         }
     },
     Post: {

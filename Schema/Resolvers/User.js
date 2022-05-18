@@ -48,12 +48,7 @@ const UserResolvers = {
             if (last_name.length > 40){
                 throw Error('Last name is too long')
             }           
-            if (!/([A-Za-z-])/.test(first_name)){
-                throw Error("Invalid first name")
-            } 
-            if (!/([A-Za-z-])/.test(last_name)){
-                throw Error("Invalid last name")
-            } 
+
             let res = await queryTool.getMany(pool, `SELECT * FROM users WHERE email = '${email}'` );
             if (res.length > 0){
                 throw Error("This email already exists");

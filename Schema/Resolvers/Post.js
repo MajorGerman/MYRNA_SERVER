@@ -59,6 +59,10 @@ const PostResolvers = {
                 WHERE id = ${post_id}`)
                 return true
             } catch (err){
+                await queryTool.insert(pool, 
+                    `UPDATE posts 
+                    SET likes = likes - 1
+                    WHERE id = ${post_id}`)
                 return false
             }
             

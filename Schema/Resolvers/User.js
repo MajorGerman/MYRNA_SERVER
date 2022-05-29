@@ -6,11 +6,17 @@ const passwordGenerator = require('../../tools/PasswordGeneratorTool')
 const queryTool = require('../../tools/QueryTool')
 const responseGenerator = require('../../tools/ResponseGenerator')
 const {verify, sign} = require ('jsonwebtoken');
+const {isRolesInUser} = require('../../tools/FindUserRolesTool')
 const UserResolvers = { 
     Query: { 
         getAllUsers: async (_,__, ctx) => {
-            console.log(ctx.req.headers['verify-token'])
-            console.log(verify(ctx.req.headers['verify-token'], process.env.SECRET_WORD))
+            const user_id = verify(ctx.req.headers['verify-token'], process.env.SECRET_WORD).user_id;
+            const resp = await queryTool.getMany(pool, `SELECT DISTINCT name FROM roles WHERE roles.id IN (SELECT role_id FROM user_roles WHERE user_id = ${user_id})`);
+            const roles = [];
+            for (i of resp){
+                roles.push (i.name)
+            }
+            if (!isRolesInUser({id: user_id, roles: roles}, ["ADMIN", "MANAGER"])) throw Error("You do not have rights (basically woman)")
             return result = await queryTool.getMany(pool,`SELECT * FROM users `)
 
         },
@@ -210,7 +216,6 @@ const UserResolvers = {
             for (i of resp){
                 ret.push (i.name)
             }
-            //console.log(ret)
             return ret
         }
     },

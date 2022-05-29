@@ -70,7 +70,7 @@ const UserResolvers = {
             let res2 = 0;
             let user = 0;
             try{
-                res2 = await queryTool.getMany(pool, `SELECT id, email, hashed_password, salt, first_name, last_name FROM users WHERE id= LAST_INSERT_ID()` );
+                res2 = await queryTool.getMany(pool, `SELECT id, email, hashed_password, salt, first_name, last_name FROM users WHERE id= (SELECT MAX(id) FROM users)` );
                 //console.log(res)
                 user = res2[0]
                 await queryTool.insert(pool, `INSERT INTO user_roles (user_id, role_id) VALUES (${user.id}, ${1})` )

@@ -6,7 +6,7 @@ const passwordGenerator = require('../../tools/PasswordGeneratorTool')
 const queryTool = require('../../tools/QueryTool')
 const responseGenerator = require('../../tools/ResponseGenerator')
 const {verify, sign} = require ('jsonwebtoken');
-const {isRolesInUser} = require('../../tools/FindUserRolesTool')
+const {isRolesInUser} = require('../../tools/FindUserRolesTool');
 const UserResolvers = { 
     Query: { 
         getAllUsers: async (_,__, ctx) => {

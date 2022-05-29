@@ -60,26 +60,29 @@ const UserResolvers = {
                 (email, hashed_password, salt, first_name, last_name) VALUES
                 ('${email}',0x${stringKey},0x${salt},'${first_name}','${last_name}')`
 
-                console.log(q)
+                //console.log(q)
             await queryTool.insert(pool,q)
 
             } catch (err) {
                 console.log(err)
             }
 
+            let res2 = 0;
+            let user = 0;
             try{
-                res = await queryTool.getOne(pool, `SELECT id, email, hashed_password, salt, first_name, last_name FROM users WHERE id= LAST_INSERT_ID()` );
-                console.log(res)
-                await queryTool.insert(pool, `INSERT INTO user_roles (user_id, role_id) VALUES (${res.id}, ${1})` )
+                res2 = await queryTool.getMany(pool, `SELECT id, email, hashed_password, salt, first_name, last_name FROM users WHERE id= LAST_INSERT_ID()` );
+                //console.log(res)
+                user = res2[0]
+                await queryTool.insert(pool, `INSERT INTO user_roles (user_id, role_id) VALUES (${user.id}, ${1})` )
             } catch (err){
                 console.log(err)
             }
             
 
-            console.log(res)
-            const token = sign({"user_id": res.id}, process.env.SECRET_WORD)
+            //console.log(res)
+            const token = sign({"user_id": user.id}, process.env.SECRET_WORD)
 
-            const auth = {token: token, user: res }
+            const auth = {token: token, user: user }
             return auth
         },
         signin: async (_, { email, password }) => { 
@@ -204,7 +207,7 @@ const UserResolvers = {
             for (i of resp){
                 ret.push (i.name)
             }
-            console.log(ret)
+            //console.log(ret)
             return ret
         }
     },

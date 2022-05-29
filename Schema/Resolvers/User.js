@@ -8,8 +8,9 @@ const responseGenerator = require('../../tools/ResponseGenerator')
 const {verify, sign} = require ('jsonwebtoken');
 const UserResolvers = { 
     Query: { 
-        getAllUsers: async () => {
-
+        getAllUsers: async (_,__, ctx) => {
+            console.log(ctx.req.headers['verify-token'])
+            console.log(verify(ctx.req.headers['verify-token'], process.env.SECRET_WORD))
             return result = await queryTool.getMany(pool,`SELECT * FROM users `)
 
         },
@@ -82,6 +83,7 @@ const UserResolvers = {
             //console.log(res)
             const token = sign({"user_id": user.id}, process.env.SECRET_WORD)
 
+            user.roles = roles(user)
             const auth = {token: token, user: user }
             return auth
         },
@@ -102,6 +104,7 @@ const UserResolvers = {
 
             const token = sign({user_id: data.id}, process.env.SECRET_WORD)
 
+            data.roles = roles(data)
             const auth = {token: token, user: data }
             console.log(auth)
             return auth

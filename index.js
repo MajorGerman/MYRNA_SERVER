@@ -35,8 +35,6 @@ const startApolloServer = async (schema) => {
 
     await server.start() 
 
-
-
     server.applyMiddleware({ app, path: '/' }); 
     await httpServer.listen(process.env.PORT || 4000, () => { 
         console.log("Server succesfully started")

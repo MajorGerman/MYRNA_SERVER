@@ -110,7 +110,13 @@ const UserResolvers = {
 
             const token = sign({user_id: data.id}, process.env.SECRET_WORD)
 
-            data.roles = roles(data)
+            const resp = await queryTool.getMany(pool, `SELECT DISTINCT name FROM roles WHERE roles.id IN (SELECT role_id FROM user_roles WHERE user_id = ${user_id})`);
+            const roles = [];
+            for (i of resp){
+                roles.push (i.name)
+            }
+            data.roles = roles
+
             const auth = {token: token, user: data }
             console.log(auth)
             return auth

@@ -7,6 +7,7 @@ const queryTool = require('../../tools/QueryTool')
 const responseGenerator = require('../../tools/ResponseGenerator')
 const {verify, sign} = require ('jsonwebtoken');
 const {isRolesInUser} = require('../../tools/FindUserRolesTool');
+
 const getUserRoles = async (user_id) =>{
     const resp = await queryTool.getMany(pool, `SELECT DISTINCT name FROM roles WHERE roles.id IN (SELECT role_id FROM user_roles WHERE user_id = ${user_id})`);
     const roles = [];
@@ -15,6 +16,7 @@ const getUserRoles = async (user_id) =>{
     }
     return roles
 }
+
 const UserResolvers = { 
     Query: { 
         getAllUsers: async (_,__, ctx) => {

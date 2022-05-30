@@ -7,20 +7,27 @@ const queryTool = require('../../tools/QueryTool')
 const responseGenerator = require('../../tools/ResponseGenerator')
 const {verify, sign} = require ('jsonwebtoken');
 const {isRolesInUser} = require('../../tools/FindUserRolesTool');
+const getUserRoles = async (user_id) =>{
+    const resp = await queryTool.getMany(pool, `SELECT DISTINCT name FROM roles WHERE roles.id IN (SELECT role_id FROM user_roles WHERE user_id = ${user_id})`);
+    const roles = [];
+    for (i of resp){
+        roles.push (i.name)
+    }
+    return roles
+}
 const UserResolvers = { 
     Query: { 
         getAllUsers: async (_,__, ctx) => {
-            const user_id = verify(ctx.req.headers['verify-token'], process.env.SECRET_WORD).user_id;
-            const resp = await queryTool.getMany(pool, `SELECT DISTINCT name FROM roles WHERE roles.id IN (SELECT role_id FROM user_roles WHERE user_id = ${user_id})`);
-            const roles = [];
-            for (i of resp){
-                roles.push (i.name)
-            }
-            if (!isRolesInUser({id: user_id, roles: roles}, ["ADMIN", "MANAGER"])) throw Error("You do not have rights (basically woman)")
+            const user = verify(ctx.req.headers['verify-token'], process.env.SECRET_WORD).user;
+            if (!isRolesInUser(user.roles, ["ADMIN", "MANAGER"])) throw Error("You do not have rights (basically woman)")
+
             return result = await queryTool.getMany(pool,`SELECT * FROM users `)
 
         },
         getUserById: async (_, { id }) => { 
+            const user = verify(ctx.req.headers['verify-token'], process.env.SECRET_WORD).user;
+            if (!isRolesInUser(user.roles, ["ADMIN"])) throw Error("You do not have rights (basically woman)")
+
             let data = await queryTool.getOne (pool, `SELECT * FROM users WHERE id = ${id}` )
 
             if (!data){
@@ -86,10 +93,11 @@ const UserResolvers = {
             }
             
 
+            user.roles = getUserRoles(user.id);
             //console.log(res)
-            const token = sign({"user_id": user.id}, process.env.SECRET_WORD)
+            const token = sign({"user": user}, process.env.SECRET_WORD)
 
-            //user.roles = roles(user)
+            
             const auth = {token: token, user: user }
             return auth
         },
@@ -108,7 +116,8 @@ const UserResolvers = {
             }
 
 
-            const token = sign({user_id: data.id}, process.env.SECRET_WORD)
+            data.roles = getUserRoles(data.id)
+            const token = sign({user: data}, process.env.SECRET_WORD)
 
 
             const auth = {token: token, user: data }
@@ -119,6 +128,10 @@ const UserResolvers = {
 
         },
         changeUserRoles: async(_, { id, roles }) => {
+
+            const user = verify(ctx.req.headers['verify-token'], process.env.SECRET_WORD).user;
+            if (!isRolesInUser(user.roles, ["ADMIN"])) throw Error("You do not have rights (basically woman)")
+
             const allRoles = await queryTool.getMany(pool, `SELECT id FROM roles`);
             const userRoles = await queryTool.getMany(pool, `SELECT role_id FROM user_roles WHERE user_id = ${id}`);
             let userRolesArray = []
@@ -155,6 +168,8 @@ const UserResolvers = {
             return user = {id: id}
         },
         addNewSubscription: async (_, {user_id, subscribed_id}) =>{
+            const user = verify(ctx.req.headers['verify-token'], process.env.SECRET_WORD).user;
+            if (!isRolesInUser(user.roles, ["USER","ADMIN"])) throw Error("You do not have rights (basically woman)")
             await queryTool.insert(pool, `INSERT INTO subscriptions (user_id, subscribed_id) VALUES (${user_id},${subscribed_id})`)
         }
 

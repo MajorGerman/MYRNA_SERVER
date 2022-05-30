@@ -1,32 +1,102 @@
-**Edit a file, create a new file, and clone from Bitbucket in under 2 minutes**
+## Database Query
 
-When you're done, you can delete the content in this README and update the file with details for others getting started with your repository.
+CREATE TABLE users (
+id INT PRIMARY KEY AUTO_INCREMENT,
+email VARCHAR(50) NOT NULL,
+hashed_password BINARY(16) NOT NULL,
+salt BINARY(16) NOT NULL,
+first_name VARCHAR(40) NOT NULL,
+last_name VARCHAR(40) NOT NULL,
+location VARCHAR(100) NULL,
+birthday DATE NULL,
+avatar INT DEFAULT 5
+);
 
-*We recommend that you open this README in another tab as you perform the tasks below. You can [watch our video](https://youtu.be/0ocf7u76WSo) for a full demo of all the steps in this tutorial. Open the video in a new tab to avoid leaving Bitbucket.*
+CREATE TABLE subscriptions (
+user_id INT,
+subscribed_id INT,
+FOREIGN KEY (user_id) REFERENCES users (id),
+FOREIGN KEY (subscribed_id) REFERENCES users (id),
+PRIMARY KEY (user_id, subscribed_id)
+);
 
----
+CREATE TABLE posts (
+id INT NOT NULL AUTO_INCREMENT,
+author INT NOT NULL,
+header TEXT,
+content MEDIUMTEXT,
+likes INT DEFAULT 0,
+FOREIGN KEY (author) REFERENCES users (id),
+CONSTRAINT PK_id PRIMARY KEY (id)
+);
 
-## Edit a file
+CREATE TABLE comments (
+id INT NOT NULL AUTO_INCREMENT,
+post_id INT NOT NULL,
+author INT,
+content MEDIUMTEXT,
+FOREIGN KEY (post_id) REFERENCES posts (id),
+FOREIGN KEY (author) REFERENCES users (id),
+CONSTRAINT PK_id PRIMARY KEY (id)
+);
 
-You’ll start by editing this README file to learn how to edit a file in Bitbucket.
+CREATE TABLE roles (
+id INT PRIMARY KEY AUTO_INCREMENT,
+name VARCHAR(30)
+);
 
-1. Click **Source** on the left side.
-2. Click the README.md link from the list of files.
-3. Click the **Edit** button.
-4. Delete the following text: *Delete this line to make a change to the README from Bitbucket.*
-5. After making your change, click **Commit** and then **Commit** again in the dialog. The commit page will open and you’ll see the change you just made.
-6. Go back to the **Source** page.
+CREATE TABLE user_roles (
+user_id INT,
+role_id INT,
+FOREIGN KEY (user_id) REFERENCES users (id),
+FOREIGN KEY (role_id) REFERENCES roles (id),
+PRIMARY KEY (user_id, role_id)
+);
 
----
+CREATE TABLE meeting_types(
+id INT PRIMARY KEY AUTO_INCREMENT,
+name VARCHAR(15)
+);
 
-## Create a file
+CREATE TABLE meetings (
+id INT PRIMARY KEY AUTO_INCREMENT,
+name VARCHAR(30) NOT NULL,
+date DATE NOT NULL ,
+type_id INT DEFAULT 1,
+FOREIGN KEY (type_id) REFERENCES meeting_types (id)
+);
 
-Next, you’ll add a new file to this repository.
+CREATE TABLE user_meetings (
+user_id INT NOT NULL,
+meeting_id INT NOT NULL,
+FOREIGN KEY (user_id) REFERENCES users (id),
+FOREIGN KEY (meeting_id) REFERENCES meetings (id)
+);
 
-1. Click the **New file** button at the top of the **Source** page.
-2. Give the file a filename of **contributors.txt**.
-3. Enter your name in the empty file space.
-4. Click **Commit** and then **Commit** again in the dialog.
-5. Go back to the **Source** page.
+CREATE TABLE meeting_msg (
+id INT PRIMARY KEY AUTO_INCREMENT,
+user_id INT NOT NULL,
+meeting_id INT NOT NULL,
+reference_msg INT NOT NULL,
+content MEDIUMTEXT,
+status VARCHAR(30),
+FOREIGN KEY (user_id) REFERENCES users (id),
+FOREIGN KEY (meeting_id) REFERENCES meetings (id)
+);
 
-Before you move on, go ahead and explore the repository. You've already seen the **Source** page, but check out the **Commits**, **Branches**, and **Settings** pages.
+INSERT INTO meeting_types (name) VALUES
+('default'),
+('not default');
+
+INSERT INTO roles (name) VALUES
+('USER'),
+('MANAGER'),
+('ADMIN');
+
+CREATE TABLE user_likes (
+user_id INT,
+post_id INT,
+PRIMARY KEY (user_id, post_id),
+FOREIGN KEY (user_id) REFERENCES users(id),
+FOREIGN KEY (post_id) REFERENCES posts (id)
+);

@@ -28,10 +28,13 @@ const PostResolvers = {
     },
     Mutation: {
         addNewPost: async (_,{user_id, header, content}) => {
+            const q = `INSERT INTO posts
+            (author, header, content) VALUES
+            (${user_id}, '${header}','${content}')`
+            console.log(q)
             await queryTool.insert(pool,
-                `INSERT INTO posts
-                (author, header, content) VALUES
-                (${user_id}, '${header.replaceAll("'", "''")}','${content.replaceAll("'", "''")}')`)
+                q)
+            
 
             return  await queryTool.getOne(pool, `SELECT * FROM posts WHERE id= LAST_INSERT_ID()` );
             
@@ -41,7 +44,7 @@ const PostResolvers = {
             await queryTool.insert(pool,
                 `INSERT INTO comments
                 (post_id ,author, content) VALUES
-                (${post_id}, ${user_id},'${content.replaceAll("'", "''")}')`)
+                (${post_id}, ${user_id},'${content}')`)
             return await queryTool.getOne(pool, `SELECT * FROM comments WHERE id= LAST_INSERT_ID()` );
         },
         addNewSubscription: async (_,{user_id, subscribed_id}) => {
@@ -53,12 +56,15 @@ const PostResolvers = {
         },
         likePost: async (_, {user_id, post_id})=> {
             try {
+                await queryTool.insert(pool, `INSERT INTO user_likes (user_id, post_id) VALUES (${user_id},${post_id})`);
                 await queryTool.insert(pool, 
                 `UPDATE posts 
                 SET likes = likes + 1
                 WHERE id = ${post_id}`)
                 return true
             } catch (err){
+                await queryTool.insert(pool, 
+                    `DELETE FROM user_likes WHERE user_id = ${user_id} AND post_id = ${post_id}`);
                 await queryTool.insert(pool, 
                     `UPDATE posts 
                     SET likes = likes - 1

@@ -45,7 +45,7 @@ const PostResolvers = {
                 `INSERT INTO comments
                 (post_id ,author, content) VALUES
                 (${post_id}, ${user_id},'${content}')`)
-            return await queryTool.getOne(pool, `SELECT * FROM comments WHERE id= *(SELECT MAX(id) FROM comments)` );
+            return await queryTool.getOne(pool, `SELECT * FROM comments WHERE id= (SELECT MAX(id) FROM comments)` );
         },
         addNewSubscription: async (_,{user_id, subscribed_id}) => {
             await queryTool.insert(pool,

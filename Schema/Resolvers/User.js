@@ -24,7 +24,7 @@ const UserResolvers = {
             return result = await queryTool.getMany(pool,`SELECT * FROM users `)
 
         },
-        getUserById: async (_, { id }) => { 
+        getUserById: async (_, { id }, ctx) => { 
             const user = verify(ctx.req.headers['verify-token'], process.env.SECRET_WORD).user;
             if (!isRolesInUser(user.roles, ["ADMIN"])) throw Error("You do not have rights (basically woman)")
 
@@ -127,7 +127,7 @@ const UserResolvers = {
         changeMyself: async() =>{
 
         },
-        changeUserRoles: async(_, { id, roles }) => {
+        changeUserRoles: async(_, { id, roles }, ctx) => {
 
             const user = verify(ctx.req.headers['verify-token'], process.env.SECRET_WORD).user;
             if (!isRolesInUser(user.roles, ["ADMIN"])) throw Error("You do not have rights (basically woman)")
@@ -167,7 +167,7 @@ const UserResolvers = {
             }
             return user = {id: id}
         },
-        addNewSubscription: async (_, {user_id, subscribed_id}) =>{
+        addNewSubscription: async (_, {user_id, subscribed_id}, ctx) =>{
             const user = verify(ctx.req.headers['verify-token'], process.env.SECRET_WORD).user;
             if (!isRolesInUser(user.roles, ["USER","ADMIN"])) throw Error("You do not have rights (basically woman)")
             await queryTool.insert(pool, `INSERT INTO subscriptions (user_id, subscribed_id) VALUES (${user_id},${subscribed_id})`)

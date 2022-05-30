@@ -26,6 +26,7 @@ const UserResolvers = {
         },
         getUserById: async (_, { id }, ctx) => { 
             const user = verify(ctx.req.headers['verify-token'], process.env.SECRET_WORD).user;
+            console.log(user)
             if (!isRolesInUser(user.roles, ["ADMIN"])) throw Error("You do not have rights (basically woman)")
 
             let data = await queryTool.getOne (pool, `SELECT * FROM users WHERE id = ${id}` )
@@ -93,8 +94,8 @@ const UserResolvers = {
             }
             
 
-            user.roles = getUserRoles(user.id);
-            //console.log(res)
+            user.roles = await getUserRoles(user.id);
+            console.log(user)
             const token = sign({"user": user}, process.env.SECRET_WORD)
 
             
@@ -116,9 +117,10 @@ const UserResolvers = {
             }
 
 
-            data.roles = getUserRoles(data.id)
+            data.roles = await getUserRoles(data.id)
             const token = sign({user: data}, process.env.SECRET_WORD)
 
+            console.log(data)
 
             const auth = {token: token, user: data }
             console.log(auth)

@@ -19,15 +19,16 @@ const UserResolvers = {
     Query: { 
         getAllUsers: async (_,__, ctx) => {
             const user = verify(ctx.req.headers['verify-token'], process.env.SECRET_WORD).user;
-            if (!isRolesInUser(user.roles, ["ADMIN", "MANAGER"])) throw Error("You do not have rights (basically woman)")
+            if (!isRolesInUser(await getUserRoles(user.id), ["ADMIN"])) throw Error("You do not have rights (basically woman)")
 
             return result = await queryTool.getMany(pool,`SELECT * FROM users `)
 
         },
         getUserById: async (_, { id }, ctx) => { 
             const user = verify(ctx.req.headers['verify-token'], process.env.SECRET_WORD).user;
-            console.log(user)
-            if (!isRolesInUser(user.roles, ["ADMIN"])) throw Error("You do not have rights (basically woman)")
+
+            console.log(id, user.id)
+            if (!isRolesInUser(await getUserRoles(user.id), ["ADMIN"]) && user.id !== id) throw Error("You do not have rights (basically woman)")
 
             let data = await queryTool.getOne (pool, `SELECT * FROM users WHERE id = ${id}` )
 
@@ -132,7 +133,7 @@ const UserResolvers = {
         changeUserRoles: async(_, { id, roles }, ctx) => {
 
             const user = verify(ctx.req.headers['verify-token'], process.env.SECRET_WORD).user;
-            if (!isRolesInUser(user.roles, ["ADMIN"])) throw Error("You do not have rights (basically woman)")
+            if (!isRolesInUser(await getUserRoles(user.id), ["ADMIN"])) throw Error("You do not have rights (basically woman)")
 
             const allRoles = await queryTool.getMany(pool, `SELECT id FROM roles`);
             const userRoles = await queryTool.getMany(pool, `SELECT role_id FROM user_roles WHERE user_id = ${id}`);
@@ -171,7 +172,7 @@ const UserResolvers = {
         },
         addNewSubscription: async (_, {user_id, subscribed_id}, ctx) =>{
             const user = verify(ctx.req.headers['verify-token'], process.env.SECRET_WORD).user;
-            if (!isRolesInUser(user.roles, ["USER","ADMIN"])) throw Error("You do not have rights (basically woman)")
+            if (!isRolesInUser(await getUserRoles(user.id), ["USER","ADMIN"])) throw Error("You do not have rights (basically woman)")
             await queryTool.insert(pool, `INSERT INTO subscriptions (user_id, subscribed_id) VALUES (${user_id},${subscribed_id})`)
         }
 

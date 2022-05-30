@@ -1,6 +1,6 @@
-const isRolesInUser = (user, roles) => {
+const isRolesInUser = (user_roles, roles) => {
     for (role of roles){
-        if (user.roles.indexOf(role) === -1){return false}
+        if (user_roles.indexOf(role) === -1){return false}
     }
     return true
 }

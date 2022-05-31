@@ -44,6 +44,7 @@ const getAllSubscribed = (user_id) => {
     return queryTool.getMany(pool, `SELECT * FROM users WHERE users.id IN (SELECT user_id FROM subscriptions WHERE subscribed_id = ${user_id})`)
 }
 
+
 module.exports = {
     getAllUsers,
     getUserById,

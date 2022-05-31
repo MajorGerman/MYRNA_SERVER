@@ -7,11 +7,13 @@ const getAllMeetings = () =>{
 const getAllUserMeetings = () =>{
     return getMany(pool, `SELECT * FROM `)
 }
-const createNewMeeting = (name) =>{
-    insert(pool, `INSERT INTO meetings (name) VALUES ('${name}')`)
+const createNewMeeting = (name, date, type) =>{
+    insert(pool, `INSERT INTO meetings (name ${date ? ',date ': ''} ${type ? ',type_id ': ''}) 
+    VALUES ('${name}' ${date ? `, '${date}' ` : '' } ${type ? `, ${type} ` : '' })`)
 }
 const addMeetingUser = (meeting_id, user_id) => {
-    insert(pool, `INSERT INTO user_meetings (meeting_id, user_id) VALUES (${meeting_id}, ${user_id})`)
+    insert(pool, `INSERT INTO user_meetings (meeting_id, user_id ) 
+    VALUES (${meeting_id}, ${user_id} )`)
 }
 const getLastMeeting = () => {
     return getOne (pool, `SELECT * FROM meetings WHERE id = (SELECT MAX(id) FROM meetings)`)

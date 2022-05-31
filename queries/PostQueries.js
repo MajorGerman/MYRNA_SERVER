@@ -50,6 +50,23 @@ const isPostLikedByUser = async (post_id, user_id) =>{
     }
     return false
 }
+const insertPost = (user_id, header, content) => {
+    queryTool.insert(pool, `INSERT INTO posts
+            (author, header, content) VALUES
+            (${user_id}, '${header}','${content}')`)
+}
+const getLastPost = () =>{
+    return queryTool.getOne(pool, `SELECT * FROM posts WHERE id= (SELECT MAX(id) FROM posts)` );
+}
+const insertComment = (user_id, post_id, content) =>{
+    queryTool.insert(pool,
+        `INSERT INTO comments
+        (post_id ,author, content) VALUES
+        (${post_id}, ${user_id},'${content}')`)
+}
+const getLastComment = () =>{
+    return queryTool.getOne(pool, `SELECT * FROM comments WHERE id= (SELECT MAX(id) FROM comments)` );
+}
 module.exports = {
     getAllUserPosts,
     getAllUserComments,
@@ -59,5 +76,9 @@ module.exports = {
     getPostsByUserId,
     getSubscribedPosts,
     getLikedPostByUserId,
-    isPostLikedByUser
+    isPostLikedByUser,
+    insertPost,
+    getLastPost,
+    insertComment,
+    getLastComment
 }

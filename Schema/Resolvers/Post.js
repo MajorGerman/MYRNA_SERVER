@@ -35,23 +35,14 @@ const PostResolvers = {
     },
     Mutation: {
         addNewPost: async (_,{user_id, header, content}) => {
-            const q = `INSERT INTO posts
-            (author, header, content) VALUES
-            (${user_id}, '${header}','${content}')`
-            console.log(q)
-            await queryTool.insert(pool, q)
+            PostQueries.insertPost(user_id, header, content)
             
-
-            return  await queryTool.getOne(pool, `SELECT * FROM posts WHERE id= (SELECT MAX(id) FROM posts)` );
+            return PostQueries.getLastPost()
             
-
         },
         addNewComment: async (_,{user_id, post_id, content}) => {
-            await queryTool.insert(pool,
-                `INSERT INTO comments
-                (post_id ,author, content) VALUES
-                (${post_id}, ${user_id},'${content}')`)
-            return await queryTool.getOne(pool, `SELECT * FROM comments WHERE id= (SELECT MAX(id) FROM comments)` );
+            PostQueries.insertComment(user_id, post_id, content)
+            return PostQueries.getLastComment()
         },
         addNewSubscription: async (_,{user_id, subscribed_id}) => {
             await queryTool.insert(pool,

@@ -216,6 +216,9 @@ const UserResolvers = {
         },
         meetings: async (user) => {
             return MeetingQueries.getAllUserMeetings(user.id)
+        },
+        likedPosts: async (user) => {
+            return PostQueries.getLikedPostByUserId(user.id)
         }
     },
     

@@ -29,6 +29,9 @@ const PostResolvers = {
         getAllSubscribedPosts: async (_,{id}) =>{
             return PostQueries.getSubscribedPosts(id);
         },
+        isPostLikedByUser: (_, {post_id, user_id})=>{
+            return PostQueries.isPostLikedByUser(post_id, user_id)
+        }
     },
     Mutation: {
         addNewPost: async (_,{user_id, header, content}) => {

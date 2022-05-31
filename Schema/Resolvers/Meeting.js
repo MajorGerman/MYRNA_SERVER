@@ -23,6 +23,13 @@ const MeetingResolvers = {
                 return false
             }
             return true
+        },
+        createMeetingMessage: (_, {meeting_id, author,content, referenceMessageId}) =>{
+            try{
+                MeetingQueries.addMeetingMessage(meeting_id, author, content, referenceMessageId);
+            } catch (err){
+
+            }
         }
     },
     Meeting:{

@@ -28,7 +28,28 @@ const getSubscribedPosts = (user_id) => {
                 WHERE user_id = ${user_id}
             )`)
 }
-
+const getLikedPostByUserId = (user_id) =>{
+    return queryTool.getMany(pool, `
+        SELECT * FROM posts
+        WHERE id IN (
+            SELECT post_id FROM user_likes
+            WHERE user_id = ${user_id}
+        )
+    `)
+}
+const isPostLikedByUser = async (post_id, user_id) =>{
+    try{
+        if ((await queryTool.getMany(pool,`
+            SELECT * FROM user_likes
+            WHERE user_id = ${user_id} AND post_id = ${post_id}
+            `)).length > 0){
+                return true
+        }
+    } catch (err){
+        return false
+    }
+    return false
+}
 module.exports = {
     getAllUserPosts,
     getAllUserComments,
@@ -36,5 +57,7 @@ module.exports = {
     getPostById,
     getAllPosts,
     getPostsByUserId,
-    getSubscribedPosts
+    getSubscribedPosts,
+    getLikedPostByUserId,
+    isPostLikedByUser
 }

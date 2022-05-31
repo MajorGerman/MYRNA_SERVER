@@ -19,6 +19,9 @@ const getLastMeeting = () => {
 const getMeetingType = (meeting_id) =>{
     return getOne (pool, `SELECT * FROM meeting_types WHERE id = (SELECT type_id FROM meetings WHERE id = ${meeting_id})`)
 }
+const getAllMeetingMembers = (meeting_id) =>{
+    return getMany (pool, `SELECT * FROM users WHERE id IN (SELECT user_id FROM user_meetings WHERE meeting_id = ${meeting_id})`)
+}
 
 module.exports = {
     getAllMeetings,
@@ -26,5 +29,6 @@ module.exports = {
     createNewMeeting,
     getLastMeeting,
     addMeetingUser,
-    getMeetingType
+    getMeetingType,
+    getAllMeetingMembers
 };

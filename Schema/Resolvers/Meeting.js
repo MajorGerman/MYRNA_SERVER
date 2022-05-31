@@ -15,11 +15,22 @@ const MeetingResolvers = {
             MeetingQueries.addMeetingUser(meeting.id, creator);
 
             return meeting
+        },
+        inviteUserToMeeting: (_, {meeting_id, user_id}) => {
+            try{
+                MeetingQueries.addMeetingUser(meeting_id, user_id)
+            } catch (err) {
+                return false
+            }
+            return true
         }
     },
     Meeting:{
         type: async (meeting) =>{
             return (await MeetingQueries.getMeetingType(meeting.id)).name
+        },
+        members: async (meeting) => {
+            return MeetingQueries.getAllMeetingMembers(meeting.id)
         }
     }
 }

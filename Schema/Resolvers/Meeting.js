@@ -7,8 +7,8 @@ const MeetingResolvers = {
         }
     },
     Mutation: {
-        createNewMeeting: async (_, {name,date, type, creator}) => {
-            MeetingQueries.createNewMeeting(name,date, type)
+        createNewMeeting: async (_, {name,date, type, creator,status}) => {
+            MeetingQueries.createNewMeeting(name,date, type,status)
 
             const meeting = await MeetingQueries.getLastMeeting();
 

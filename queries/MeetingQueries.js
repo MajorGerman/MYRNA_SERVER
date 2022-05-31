@@ -7,9 +7,9 @@ const getAllMeetings = () =>{
 const getAllUserMeetings = () =>{
     return getMany(pool, `SELECT * FROM `)
 }
-const createNewMeeting = (name, date, type) =>{
-    insert(pool, `INSERT INTO meetings (name ${date ? ',date ': ''} ${type ? ',type_id ': ''}) 
-    VALUES ('${name}' ${date ? `, '${date}' ` : '' } ${type ? `, ${type} ` : '' })`)
+const createNewMeeting = (name, date, type,status) =>{
+    insert(pool, `INSERT INTO meetings (name ${date ? ',date ': ''} ${type ? ',type_id ': ''} ${status ? ',status ': ''}) 
+    VALUES ('${name}' ${date ? `, '${date}' ` : '' } ${type ? `, ${type} ` : '' } ${status ? `, ${status} ` : '' })`)
 }
 const addMeetingUser = (meeting_id, user_id) => {
     insert(pool, `INSERT INTO user_meetings (meeting_id, user_id ) 

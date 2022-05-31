@@ -26,7 +26,6 @@ const UserResolvers = {
         },
         getUserById: async (_, { id }, ctx) => { 
             const user = verify(ctx.req.headers['verify-token'], process.env.SECRET_WORD).user;
-            if (!isRolesInUser(await getUserRoles(user.id), ["ADMIN"]) && user.id !== id) throw Error("You do not have rights (basically woman)")
 
             let data = await UserQueries.getUserById(id)
 

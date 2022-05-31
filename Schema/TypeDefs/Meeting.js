@@ -19,6 +19,7 @@ const MeetingTypes = gql`
     }
     type Mutation {
         createNewMeeting(name: String!,date: String, type: Int, creator: Int!): Meeting!
+        inviteUserToMeeting(meeting_id: Int!, user_id: Int!): Boolean!
     }
 `
 

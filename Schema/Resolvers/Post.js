@@ -89,8 +89,8 @@ const PostResolvers = {
         },
         deletePost: async (_, {post_id}, ctx)=> {
             const user = verify(ctx.req.headers['verify-token'], process.env.SECRET_WORD).user;
-            const user_id = (await PostQueries.getPostById(post_id)).id
-            if (!isRolesInUser(await getUserRoles(user.id), ["ADMIN"]) && user.id !== user_id) throw Error("You do not have rights (basically woman)")
+            const user_id = (await PostQueries.getPostById(post_id)).author
+            if (!isRolesInUser(await getUserRoles(user.id), ["ADMIN"]) && user.id != user_id) throw Error("You do not have rights (basically woman)")
 
             PostQueries.deletePost(post_id)
             return true;

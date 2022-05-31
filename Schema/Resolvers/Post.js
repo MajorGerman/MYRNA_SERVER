@@ -18,27 +18,16 @@ const getUserRoles = async (user_id) =>{
 const PostResolvers = { 
     Query: {
         getAllPosts: async () => {
-            let result = await queryTool.getMany(pool,`SELECT * FROM posts WHERE deleted = 0 ORDER BY id DESC`)
-            for (i of result){
-                i.user = {"id" : i.author };
-            }
-            console.log(result);
-            return result;
+            return PostQueries.getAllPosts();
         },
         getPostById: async (_,{id}) => {
-            return await queryTool.getOne(pool, `SELECT * FROM posts WHERE id = ${id}`)
+            return PostQueries.getPostById(id)
         },
         getAllUserPostById: async (_,{id}) => {
-            return await queryTool.getMany(pool,`SELECT * FROM posts WHERE author = ${id}`)
+            return PostQueries.getPostsByUserId(id)
         },
         getAllSubscribedPosts: async (_,{id}) =>{
-            return await queryTool.getMany(pool,`
-            SELECT * FROM posts 
-            WHERE author IN (
-                SELECT subscribed_id
-                FROM subscriptions
-                WHERE user_id = ${id}
-            )`)
+            return PostQueries.getSubscribedPosts(id);
         },
     },
     Mutation: {

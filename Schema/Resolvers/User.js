@@ -1,49 +1,40 @@
-const {pool} = require("../../connector");
-let sql = require ("mysql2/promise");
-const crypto = require('crypto');
-const { Buffer } = require('buffer');
 const passwordGenerator = require('../../tools/PasswordGeneratorTool')
-const queryTool = require('../../tools/QueryTool')
-const responseGenerator = require('../../tools/ResponseGenerator')
 const {verify, sign} = require ('jsonwebtoken');
 const {isRolesInUser} = require('../../tools/FindUserRolesTool');
+const UserQueries = require('../../queries/UserQueries')
+const PostQueries = require('../../queries/PostQueries')
+
 const getUserRoles = async (user_id) =>{
-    const resp = await queryTool.getMany(pool, `SELECT DISTINCT name FROM roles WHERE roles.id IN (SELECT role_id FROM user_roles WHERE user_id = ${user_id})`);
+    const resp = await UserQueries.getAllUserRoles(user_id)
+    console.log(resp)
     const roles = [];
     for (i of resp){
         roles.push (i.name)
     }
     return roles
 }
+
 const UserResolvers = { 
     Query: { 
         getAllUsers: async (_,__, ctx) => {
             const user = verify(ctx.req.headers['verify-token'], process.env.SECRET_WORD).user;
             if (!isRolesInUser(await getUserRoles(user.id), ["ADMIN"])) throw Error("You do not have rights (basically woman)")
 
-            return result = await queryTool.getMany(pool,`SELECT * FROM users `)
+            return await UserQueries.getAllUsers();
 
         },
         getUserById: async (_, { id }, ctx) => { 
             const user = verify(ctx.req.headers['verify-token'], process.env.SECRET_WORD).user;
 
-            console.log(id, user.id)
             if (!isRolesInUser(await getUserRoles(user.id), ["ADMIN"]) && user.id !== id) throw Error("You do not have rights (basically woman)")
 
-            let data = await queryTool.getOne (pool, `SELECT * FROM users WHERE id = ${id}` )
+            let data = await UserQueries.getUserById(id)
 
             if (!data){
                 throw Error("No such user")
             }
 
             return data;
-        },
-        me: async (_, __, {req}) => {
-            if (!req.user_id){
-                return null;
-            }
-
-            return User.getUserById(req.user_id)
         }
             
     },
@@ -65,38 +56,33 @@ const UserResolvers = {
                 throw Error('Last name is too long')
             }           
 
-            let res = await queryTool.getMany(pool, `SELECT * FROM users WHERE email = '${email}'` );
+            let res = await UserQueries.getUsersByEmail(email);
             if (res.length > 0){
                 throw Error("This email already exists");
             } 
 
             let [stringKey, salt] = await passwordGenerator.generateHashedPasswordAndSalt(password);
             try{
-                let q = `INSERT INTO users 
-                (email, hashed_password, salt, first_name, last_name) VALUES
-                ('${email}',0x${stringKey},0x${salt},'${first_name}','${last_name}')`
-
-                //console.log(q)
-            await queryTool.insert(pool,q)
+                
+                UserQueries.insertUser(email, stringKey, salt, first_name, last_name)
 
             } catch (err) {
                 console.log(err)
             }
 
-            let res2 = 0;
             let user = 0;
             try{
-                res2 = await queryTool.getMany(pool, `SELECT id, email, hashed_password, salt, first_name, last_name FROM users WHERE id= (SELECT MAX(id) FROM users)` );
                 //console.log(res)
-                user = res2[0]
-                await queryTool.insert(pool, `INSERT INTO user_roles (user_id, role_id) VALUES (${user.id}, ${1})` )
+                user = await UserQueries.getLastInsertedUser()
+
+
+                UserQueries.insertUserRole(user.id, 1); //1st role 
             } catch (err){
                 console.log(err)
             }
             
 
             user.roles = await getUserRoles(user.id);
-            console.log(user)
             const token = sign({"user": user}, process.env.SECRET_WORD)
 
             
@@ -104,27 +90,24 @@ const UserResolvers = {
             return auth
         },
         signin: async (_, { email, password }) => { 
-            let data = await queryTool.getOne (pool,`SELECT id FROM users WHERE email = '${email}'`)
+            let user = await UserQueries.getUsersByEmail(email);
 
-            if (!data) throw Error('wrong email or password');
-            if (data.length == 0) throw Error('wrong email');
+            if (!user) throw Error('wrong email or password');
+            if (user.length == 0) throw Error('wrong email');
 
-            data = await queryTool.getOne (pool,`SELECT id, salt, hashed_password FROM users WHERE email = '${email}'`)
+            user = user[0]
 
             try{
-                if ( !passwordGenerator.validatePassword(password, data.salt, data.hashed_password) ) throw Error('wrong email or password');
+                if ( !passwordGenerator.validatePassword(password, user.salt, user.hashed_password) ) throw Error('wrong email or password');
             } catch {
                 throw Error('wrong email or password');
             }
 
 
-            data.roles = await getUserRoles(data.id)
-            const token = sign({user: data}, process.env.SECRET_WORD)
+            user.roles = await getUserRoles(user.id)
+            const token = sign({user: user}, process.env.SECRET_WORD)
 
-            console.log(data)
-
-            const auth = {token: token, user: data }
-            console.log(auth)
+            const auth = {token: token, user: user }
             return auth
         },
         changeMyself: async() =>{
@@ -135,11 +118,12 @@ const UserResolvers = {
             const user = verify(ctx.req.headers['verify-token'], process.env.SECRET_WORD).user;
             if (!isRolesInUser(await getUserRoles(user.id), ["ADMIN"])) throw Error("You do not have rights (basically woman)")
 
-            const allRoles = await queryTool.getMany(pool, `SELECT id FROM roles`);
-            const userRoles = await queryTool.getMany(pool, `SELECT role_id FROM user_roles WHERE user_id = ${id}`);
+            const allRoles = await UserQueries.getAllRoles()
+            const userRoles = await UserQueries.getAllUserRoles(id)
+
             let userRolesArray = []
             for (i of userRoles){
-                userRolesArray.push(i.role_id)
+                userRolesArray.push(i.id)
             }
             const toChange = {
                 'toDelete': [],
@@ -156,85 +140,80 @@ const UserResolvers = {
             
             for (i of toChange.toAdd){
                 try{
-                    await queryTool.insert(pool, `INSERT INTO user_roles (user_id, role_id) VALUES (${id},${i})`)
+                    UserQueries.insertUserRole(id, i)
                 } catch (err) {
                     console.log(err)
                 }
             }
             for (i of toChange.toDelete){
                 try{
-                    await queryTool.insert(pool, `DELETE FROM user_roles WHERE user_id = ${id} AND role_id = ${i}`)
+                    UserQueries.deleteUserRole(id, i)
                 } catch (err) {
                     console.log(err)
                 }
             }
-            return user = {id: id}
+            return {id: id}
         },
         addNewSubscription: async (_, {user_id, subscribed_id}, ctx) =>{
             const user = verify(ctx.req.headers['verify-token'], process.env.SECRET_WORD).user;
-            if (!isRolesInUser(await getUserRoles(user.id), ["USER","ADMIN"])) throw Error("You do not have rights (basically woman)")
-            await queryTool.insert(pool, `INSERT INTO subscriptions (user_id, subscribed_id) VALUES (${user_id},${subscribed_id})`)
+            if (!isRolesInUser(await getUserRoles(user.id), ["USER","ADMIN"]) && user.id !== user_id ) throw Error("You do not have rights (basically woman)")
+
+            UserQueries.insertSubcription(user_id, subscribed_id);
         }
 
         
     },
     User: {
         id: async (user) =>{
-            let data = await queryTool.getOne (pool, `SELECT * FROM users WHERE id = ${user.id}` )
+            let user_ret = await UserQueries.getUserById(user.id)
 
-            if (!data){
+            if (!user_ret){
                 throw Error("No such user")
             }
 
-            return data.id;
+            return user_ret.id;
         },
         email: async  (user) => {
-            let data = await queryTool.getOne (pool, `SELECT * FROM users WHERE id = ${user.id}` )
+            let user_ret = await UserQueries.getUserById(user.id)
 
-            if (!data){
+            if (!user_ret){
                 throw Error("No such user")
             }
 
-            return data.email;
+            return user_ret.email;
         },
         first_name: async  (user) => {
-            let data = await queryTool.getOne (pool, `SELECT * FROM users WHERE id = ${user.id}` )
+            let user_ret = await UserQueries.getUserById(user.id)
 
-            if (!data){
+            if (!user_ret){
                 throw Error("No such user")
             }
 
-            return data.first_name;
+            return user_ret.first_name;
         },
         last_name: async  (user) => {
-            let data = await queryTool.getOne (pool, `SELECT * FROM users WHERE id = ${user.id}` )
+            let user_ret = await UserQueries.getUserById(user.id)
 
-            if (!data){
+            if (!user_ret){
                 throw Error("No such user")
             }
 
-            return data.last_name;
+            return user_ret.last_name;
         },
         subscriptions: async  (user) =>{
-            return await queryTool.getMany(pool, `SELECT * FROM users WHERE users.id IN (SELECT subscribed_id FROM subscriptions WHERE user_id = ${user.id})`)
+            return await UserQueries.getAllSubsciptions(user.id)
         },
         subscribed: async (user) => {
-            return await queryTool.getMany(pool, `SELECT * FROM users WHERE users.id IN (SELECT user_id FROM subscriptions WHERE subscribed_id = ${user.id})`)
+            return await UserQueries.getAllSubscribed(user.id);
         },
         posts: async  (user) => {
-            res = await queryTool.getMany(pool, `SELECT * FROM posts WHERE user_id = ${user.id}`)
-            return res
+           return await PostQueries.getAllUserPosts(user.id);
         },
         comments: async  (user) => {
-            return await queryTool.getMany(pool, `SELECT * FROM comments WHERE user_id = ${user.id}`)
+            return await PostQueries.getAllUserComments(user.id)
         },
         roles: async (user) => {
-            const resp = await queryTool.getMany(pool, `SELECT DISTINCT name FROM roles WHERE roles.id IN (SELECT role_id FROM user_roles WHERE user_id = ${user.id})`)
-            let ret = []
-            for (i of resp){
-                ret.push (i.name)
-            }
-            return ret
+            return await getUserRoles(user.id)
         }
     },
     

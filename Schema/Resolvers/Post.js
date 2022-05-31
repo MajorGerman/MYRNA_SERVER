@@ -32,11 +32,10 @@ const PostResolvers = {
             (author, header, content) VALUES
             (${user_id}, '${header}','${content}')`
             console.log(q)
-            await queryTool.insert(pool,
-                q)
+            await queryTool.insert(pool, q)
             
 
-            return  await queryTool.getOne(pool, `SELECT * FROM posts WHERE id= LAST_INSERT_ID()` );
+            return  await queryTool.getOne(pool, `SELECT * FROM posts WHERE id= (SELECT MAX(id) FROM posts)` );
             
 
         },

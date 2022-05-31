@@ -10,9 +10,13 @@ const getAllUserComments = (user_id) => {
 const deletePost = (post_id) => {
     queryTool.insert(pool, `UPDATE posts SET deleted = true WHERE id = ${post_id}`)
 }
+const getPostById = (post_id) => {
+    return queryTool.getOne(pool, `SELECT * FROM posts WHERE id = ${post_id}`)
+}
 
 module.exports = {
     getAllUserPosts,
     getAllUserComments,
-    deletePost
+    deletePost,
+    getPostById
 }

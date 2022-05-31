@@ -5,7 +5,7 @@ const MeetingTypes = gql`
         id: Int!,
         name: String!,
         date: String,
-        type: Int!,
+        type: String!,
         members: [User] 
     }
     type MeetingMessage {
@@ -16,6 +16,9 @@ const MeetingTypes = gql`
     }
     type Query {
         getAllMeetings: [Meeting]
+    }
+    type Mutation {
+        createNewMeeting(name: String!,date: String, type: Int, creator: Int!): Meeting!
     }
 `
 

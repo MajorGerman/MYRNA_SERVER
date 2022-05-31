@@ -3,6 +3,7 @@ const {verify, sign} = require ('jsonwebtoken');
 const {isRolesInUser} = require('../../tools/FindUserRolesTool');
 const UserQueries = require('../../queries/UserQueries')
 const PostQueries = require('../../queries/PostQueries')
+const MeetingQueries = require('../../queries/MeetingQueries')
 
 const getUserRoles = async (user_id) =>{
     const resp = await UserQueries.getAllUserRoles(user_id)
@@ -213,6 +214,9 @@ const UserResolvers = {
         },
         roles: async (user) => {
             return await getUserRoles(user.id)
+        },
+        meetings: async (user) => {
+            return MeetingQueries.getAllUserMeetings(user.id)
         }
     },
     

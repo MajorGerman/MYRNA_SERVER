@@ -65,6 +65,7 @@ id INT PRIMARY KEY AUTO_INCREMENT,
 name VARCHAR(30) NOT NULL,
 date DATE NOT NULL ,
 type_id INT DEFAULT 1,
+status VARCHAR(30),
 FOREIGN KEY (type_id) REFERENCES meeting_types (id)
 );
 

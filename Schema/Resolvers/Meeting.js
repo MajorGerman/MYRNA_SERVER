@@ -4,7 +4,7 @@ const MeetingResolvers = {
     Query: {
         getAllMeetings: () =>{
             return PostQueries.getAllMeetings();
-        }
+        },
     },
     Mutation: {
         createNewMeeting: async (_, {name,date, type, creator,status}) => {

@@ -4,8 +4,8 @@ const {pool} = require("../connector");
 const getAllMeetings = () =>{
     return getMany(pool, `SELECT * FROM meetings`)
 }
-const getAllUserMeetings = () =>{
-    return getMany(pool, `SELECT * FROM `)
+const getAllUserMeetings = (user_id) =>{
+    return getMany(pool, `SELECT * FROM meetings WHERE id IN (SELECT id FROM user_meetings WHERE user_id = ${user_id})`)
 }
 const createNewMeeting = (name, date, type,status) =>{
     insert(pool, `INSERT INTO meetings (name ${date ? ',date ': ''} ${type ? ',type_id ': ''} ${status ? ',status ': ''}) 

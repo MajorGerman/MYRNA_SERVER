@@ -21,13 +21,14 @@ PRIMARY KEY (user_id, subscribed_id)
 );
 
 CREATE TABLE posts (
-id INT NOT NULL AUTO_INCREMENT,
-author INT NOT NULL,
-header TEXT,
-content MEDIUMTEXT,
-likes INT DEFAULT 0,
-FOREIGN KEY (author) REFERENCES users (id),
-CONSTRAINT PK_id PRIMARY KEY (id)
+    id INT NOT NULL AUTO_INCREMENT,
+    author INT NOT NULL,
+    header TEXT,
+    content MEDIUMTEXT,
+    likes INT DEFAULT 0,
+    deleted BOOLEAN DEFAULT false,
+    FOREIGN KEY (author) REFERENCES users (id),
+    CONSTRAINT PK_id PRIMARY KEY (id)
 );
 
 CREATE TABLE comments (

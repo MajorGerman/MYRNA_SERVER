@@ -1,9 +1,24 @@
 const queryTool = require('../../tools/QueryTool')
 const {pool} = require("../../connector");
+const {verify, sign} = require ('jsonwebtoken');
+const {isRolesInUser} = require('../../tools/FindUserRolesTool');
+
+const UserQueries = require('../../queries/UserQueries')
+const PostQueries = require('../../queries/PostQueries')
+
+const getUserRoles = async (user_id) =>{
+    const resp = await UserQueries.getAllUserRoles(user_id)
+    console.log(resp)
+    const roles = [];
+    for (i of resp){
+        roles.push (i.name)
+    }
+    return roles
+}
 const PostResolvers = { 
     Query: {
         getAllPosts: async () => {
-            let result = await queryTool.getMany(pool,`SELECT * FROM posts ORDER BY id DESC`)
+            let result = await queryTool.getMany(pool,`SELECT * FROM posts WHERE deleted = 0 ORDER BY id DESC`)
             for (i of result){
                 i.user = {"id" : i.author };
             }
@@ -71,6 +86,13 @@ const PostResolvers = {
                 return false
             }
             
+        },
+        deletePost: async (_, {post_id}, ctx)=> {
+            const user = verify(ctx.req.headers['verify-token'], process.env.SECRET_WORD).user;
+            if (!isRolesInUser(await getUserRoles(user.id), ["ADMIN"]) && user.id !== id) throw Error("You do not have rights (basically woman)")
+
+            PostQueries.deletePost(post_id)
+            return true;
         }
     },
     Post: {

@@ -16,4 +16,7 @@ const insert = async (pool, query) => {
     conn.release()
     return [data, fields]
 }
+const escapeString = async (string) => {
+    return string.replace("'", "''")
+}
 module.exports = {getOne, getMany, insert}

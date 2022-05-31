@@ -10,15 +10,17 @@ const PORT = 4000;
 // importing types 
 const { UserTypes } = require('./Schema/TypeDefs/User');
 const { PostTypes } = require('./Schema/TypeDefs/Post');
+const { MeetingTypes } = require('./Schema/TypeDefs/Meeting');
 
 //importing resolvers 
 const { UserResolvers } = require('./Schema/Resolvers/User');
 const { PostResolvers } = require('./Schema/Resolvers/Post');
+const {MeetingResolvers} = require('./Schema/Resolvers/Meeting');
 
 // defining schema 
 const schema = makeExecutableSchema({ 
-    typeDefs:  [ UserTypes , PostTypes], 
-    resolvers: [ UserResolvers , PostResolvers],
+    typeDefs:  [ UserTypes , PostTypes, MeetingTypes], 
+    resolvers: [ UserResolvers , PostResolvers, MeetingResolvers],
 })
 
 const startApolloServer = async (schema) => { 

@@ -22,6 +22,9 @@ const getMeetingType = (meeting_id) =>{
 const getAllMeetingMembers = (meeting_id) =>{
     return getMany (pool, `SELECT * FROM users WHERE id IN (SELECT user_id FROM user_meetings WHERE meeting_id = ${meeting_id})`)
 }
+const addMeetingMessage = (meeting_id, author,content, referenceMessageId) =>{
+    insert(pool, `INSERT INTO meeting_msg (meeting_id, author, content) VALUES (${meeting_id},${author},'${content}')`)
+}
 
 module.exports = {
     getAllMeetings,

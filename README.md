@@ -76,12 +76,12 @@ FOREIGN KEY (meeting_id) REFERENCES meetings (id)
 
 CREATE TABLE meeting_msg (
 id INT PRIMARY KEY AUTO_INCREMENT,
-user_id INT NOT NULL,
+author INT NOT NULL,
 meeting_id INT NOT NULL,
 reference_msg INT NOT NULL,
 content MEDIUMTEXT,
 status VARCHAR(30),
-FOREIGN KEY (user_id) REFERENCES users (id),
+FOREIGN KEY (author) REFERENCES users (id),
 FOREIGN KEY (meeting_id) REFERENCES meetings (id)
 );
 

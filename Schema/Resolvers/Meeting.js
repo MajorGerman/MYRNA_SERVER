@@ -35,9 +35,15 @@ const MeetingResolvers = {
         deleteMeeting: async (_, {meeting_id, user_id}) => {
             const users = await MeetingQueries.getAllMeetingMembers(meeting_id);
 
+            try{
+
             MeetingQueries.removeMeetingUser(meeting_id, user_id);
             if (users.length > 1) {return true}
             MeetingQueries.deleteMeeting(meeting_id)
+            } catch (err){
+                throw Error(err);
+            }
+            return true
         }
     },
     Meeting:{

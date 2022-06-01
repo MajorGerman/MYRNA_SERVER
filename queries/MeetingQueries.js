@@ -15,8 +15,8 @@ const addMeetingUser = (meeting_id, user_id) => {
     insert(pool, `INSERT INTO user_meetings (meeting_id, user_id ) 
     VALUES (${meeting_id}, ${user_id} )`)
 }
-const getLastMeeting = () => {
-    return getOne (pool, `SELECT * FROM meetings WHERE id = (SELECT MAX(id) FROM meetings)`)
+const getLastMeeting = async () => {
+    return await getOne (pool, `SELECT * FROM meetings WHERE id = (SELECT MAX(id) FROM meetings)`)
 }
 const getMeetingType = (meeting_id) =>{
     return getOne (pool, `SELECT * FROM meeting_types WHERE id = (SELECT type_id FROM meetings WHERE id = ${meeting_id})`)

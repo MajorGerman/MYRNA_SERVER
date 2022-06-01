@@ -5,7 +5,7 @@ const getAllMeetings = () =>{
     return getMany(pool, `SELECT * FROM meetings`)
 }
 const getAllUserMeetings = (user_id) =>{
-    return getMany(pool, `SELECT * FROM meetings WHERE id IN (SELECT id FROM user_meetings WHERE user_id = ${user_id})`)
+    return getMany(pool, `SELECT * FROM meetings WHERE id IN (SELECT meeting_id FROM user_meetings WHERE user_id = ${user_id})`)
 }
 const createNewMeeting =async (name, date, type,status) =>{
     await insert(pool, `INSERT INTO meetings (name ${date ? ',date ': ''} ${type ? ',type_id ': ''} ${status ? ',status ': ''}) 

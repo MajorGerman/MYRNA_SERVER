@@ -32,7 +32,7 @@ const MeetingResolvers = {
 
             }
         },
-        deleteMeeting: (_, {meeting_id, user_id}) => {
+        deleteMeeting: async (_, {meeting_id, user_id}) => {
             const users = await MeetingQueries.getAllMeetingMembers(meeting_id);
 
             MeetingQueries.removeMeetingUser(meeting_id, user_id);

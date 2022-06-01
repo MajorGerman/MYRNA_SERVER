@@ -27,11 +27,11 @@ const getAllMeetingMembers = (meeting_id) =>{
 const addMeetingMessage = (meeting_id, author,content, referenceMessageId) =>{
     insert(pool, `INSERT INTO meeting_msg (meeting_id, author, content) VALUES (${meeting_id},${author},'${content}')`)
 }
-const deleteMeeting = (meeting_id) => {
-    insert (pool, `DELETE FROM meetings WHERE id = ${meeting_id}`);
+const deleteMeeting = async (meeting_id) => {
+    await insert (pool, `DELETE FROM meetings WHERE id = ${meeting_id}`);
 }
-const removeMeetingUser = (meeting_id, user_id)=>{
-    insert(pool, `DELETE FROM meetings WHERE meeting_id ${meeting_id} AND user_id = ${user_id}`)
+const removeMeetingUser = async (meeting_id, user_id)=>{
+    await insert(pool, `DELETE FROM meetings WHERE meeting_id ${meeting_id} AND user_id = ${user_id}`)
 }
 
 module.exports = {

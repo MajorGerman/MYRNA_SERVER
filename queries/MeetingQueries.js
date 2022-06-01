@@ -31,7 +31,7 @@ const deleteMeeting = async (meeting_id) => {
     await insert (pool, `DELETE FROM meetings WHERE id = ${meeting_id}`);
 }
 const removeMeetingUser = async (meeting_id, user_id)=>{
-    await insert(pool, `DELETE FROM meetings WHERE meeting_id = ${meeting_id} AND user_id = ${user_id}`)
+    await insert(pool, `DELETE FROM user_meetings WHERE meeting_id = ${meeting_id} AND user_id = ${user_id}`)
 }
 
 module.exports = {

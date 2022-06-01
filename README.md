@@ -36,7 +36,7 @@ id INT NOT NULL AUTO_INCREMENT,
 post_id INT NOT NULL,
 author INT,
 content MEDIUMTEXT,
-deleted BOOLEAN DEFAULT false
+deleted BOOLEAN DEFAULT false,
 FOREIGN KEY (post_id) REFERENCES posts (id),
 FOREIGN KEY (author) REFERENCES users (id),
 CONSTRAINT PK_id PRIMARY KEY (id)
@@ -88,8 +88,9 @@ FOREIGN KEY (meeting_id) REFERENCES meetings (id)
 );
 
 INSERT INTO meeting_types (name) VALUES
-('default'),
-('not default');
+('Hang Out'),
+('Business'),
+('Date');
 
 INSERT INTO roles (name) VALUES
 ('USER'),

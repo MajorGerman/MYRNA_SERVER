@@ -23,6 +23,7 @@ const MeetingTypes = gql`
         inviteUserToMeeting(meeting_id: Int!, user_id: Int!): Boolean!
         createMeetingMessage(meeting_id: Int!, author: Int!,content: String!, referenceMessageId: Int): MeetingMessage!
         deleteMeeting(meeting_id: Int!, user_id: Int!) : Boolean!
+        changeMeeting(meeting_id: Int!, name: String, date: String ): Meeting!
     }
 `
 

@@ -33,6 +33,15 @@ const deleteMeeting = async (meeting_id) => {
 const removeMeetingUser = async (meeting_id, user_id)=>{
     await insert(pool, `DELETE FROM user_meetings WHERE meeting_id = ${meeting_id} AND user_id = ${user_id}`)
 }
+const changeMeeting = async (meeting_id, name, date) => {
+    let comma = (name != null && date != null) ? ',' : ''
+    await insert(pool, `UPDATE meetings
+    SET ${name ? ` name = '${name}'` : '' } ${comma} ${date ? ` date = '${date}'` : '' }
+    WHERE id = ${meeting_id}`)
+}
+const getMeetingById = async (meeting_id) => {
+    return getOne(pool, `SELECT * FROM meetings WHERE id = ${meeting_id}`);
+}
 
 module.exports = {
     getAllMeetings,
@@ -44,5 +53,7 @@ module.exports = {
     getAllMeetingMembers,
     addMeetingMessage,
     deleteMeeting,
-    removeMeetingUser
+    removeMeetingUser,
+    changeMeeting,
+    getMeetingById
 };

@@ -40,6 +40,10 @@ const MeetingResolvers = {
             if (users.length > 1) {return true}
             await MeetingQueries.deleteMeeting(meeting_id)
             return true
+        },
+        changeMeeting: async (_, {meeting_id, name, date}, ctx) => {
+            MeetingQueries.changeMeeting(meeting_id, name, date);
+            return MeetingQueries.getMeetingById(meeting_id)
         }
     },
     Meeting:{

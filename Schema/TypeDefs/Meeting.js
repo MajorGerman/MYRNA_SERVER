@@ -6,7 +6,8 @@ const MeetingTypes = gql`
         name: String!,
         date: String,
         type: String!,
-        status: String
+        status: String,
+        creator: User!
         members: [User] 
     }
     type MeetingMessage {

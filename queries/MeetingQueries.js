@@ -7,9 +7,9 @@ const getAllMeetings = () =>{
 const getAllUserMeetings = (user_id) =>{
     return getMany(pool, `SELECT * FROM meetings WHERE id IN (SELECT meeting_id FROM user_meetings WHERE user_id = ${user_id})`)
 }
-const createNewMeeting =async (name, date, type,status) =>{
-    await insert(pool, `INSERT INTO meetings (name ${date ? ',date ': ''} ${type ? ',type_id ': ''} ${status ? ',status ': ''}) 
-    VALUES ('${name}' ${date ? `, '${date}' ` : '' } ${type ? `, ${type} ` : '' } ${status ? `, ${status} ` : '' })`)
+const createNewMeeting =async (name, date, type,status, creator) =>{
+    await insert(pool, `INSERT INTO meetings (name, creator ${date ? ',date ': ''} ${type ? ',type_id ': ''} ${status ? ',status ': ''}) 
+    VALUES ('${name}', ${creator} ${date ? `, '${date}' ` : '' } ${type ? `, ${type} ` : '' } ${status ? `, ${status} ` : '' })`)
 }
 const addMeetingUser = (meeting_id, user_id) => {
     insert(pool, `INSERT INTO user_meetings (meeting_id, user_id ) 
@@ -42,6 +42,9 @@ const changeMeeting = async (meeting_id, name, date) => {
 const getMeetingById = async (meeting_id) => {
     return getOne(pool, `SELECT * FROM meetings WHERE id = ${meeting_id}`);
 }
+const getMeetingCreator = async (meeting_id) => {
+    return getOne(pool, `SELECT * FROM users WHERE users.id = (SELECT creator FROM meetings WHERE meetings.id = ${meeting_id})`)
+}
 
 module.exports = {
     getAllMeetings,
@@ -55,5 +58,6 @@ module.exports = {
     deleteMeeting,
     removeMeetingUser,
     changeMeeting,
-    getMeetingById
+    getMeetingById,
+    getMeetingCreator
 };

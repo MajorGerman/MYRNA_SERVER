@@ -66,7 +66,9 @@ name VARCHAR(30) NOT NULL,
 date DATE NOT NULL ,
 type_id INT DEFAULT 1,
 status VARCHAR(30),
-FOREIGN KEY (type_id) REFERENCES meeting_types (id)
+creator INT NOT NULL,
+FOREIGN KEY (type_id) REFERENCES meeting_types (id),
+FOREIGN KEY (creator) REFERENCES users (id)
 );
 
 CREATE TABLE user_meetings (

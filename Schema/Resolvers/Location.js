@@ -3,6 +3,9 @@ const LocationResolvers = {
     Query: {
         getAllPlaces: async () =>{
             return LocationQueries.getAllPlaces()
+        },
+        getPlaceById: async (_, {place_id}) =>{
+            return LocationQueries.getLocationByPlaceId(place_id)
         }
     },
     Mutation:{

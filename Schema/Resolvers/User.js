@@ -63,22 +63,13 @@ const UserResolvers = {
             let [stringKey, salt] = await passwordGenerator.generateHashedPasswordAndSalt(password);
             try{
                 
-                UserQueries.insertUser(email, stringKey, salt, first_name, last_name ,location_id, birthday)
+                await UserQueries.insertUser(email, stringKey, salt, first_name, last_name ,location_id, birthday)
 
             } catch (err) {
                 console.log(err)
             }
 
-            let user = 0;
-            try{
-                //console.log(res)
-                user = await UserQueries.getLastInsertedUser()
-
-
-                UserQueries.insertUserRole(user.id, 1); //1st role 
-            } catch (err){
-                console.log(err)
-            }
+            const user = await UserQueries.getLastInsertedUser()
             
 
             user.roles = await getUserRoles(user.id);

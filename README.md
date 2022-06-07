@@ -143,6 +143,15 @@ INSERT INTO roles (name) VALUES
 ('MANAGER'),
 ('ADMIN');
 
+DELIMITER ;
+
+CREATE TRIGGER give_user_role   
+    AFTER INSERT
+        ON users FOR EACH ROW
+            INSERT INTO user_roles (user_id, role_id)
+            VALUES (new.id, 1)
+DELIMITER ;
+
 CREATE TABLE subscriptions ( user_id INT, subscribed_id INT, FOREIGN KEY (user_id) REFERENCES users (id), FOREIGN KEY (subscribed_id) REFERENCES users (id), PRIMARY KEY (user_id, subscribed_id) );
 
 CREATE TABLE posts ( id INT NOT NULL AUTO_INCREMENT, author INT NOT NULL, header TEXT, content MEDIUMTEXT, likes INT DEFAULT 0, deleted BOOLEAN DEFAULT false, FOREIGN KEY (author) REFERENCES users (id), CONSTRAINT PK_id PRIMARY KEY (id) );

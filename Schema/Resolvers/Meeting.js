@@ -33,7 +33,27 @@ const MeetingResolvers = {
             }
             return MeetingQueries.getLastMeetingMessage()
         },
-        deleteMeeting: async (_, {meeting_id, user_id}) => {
+        deleteMeeting: async (_, {meeting_id, user_id}, ctx) => {
+
+            const checkIfUserInMeeting = (user_id, members)=>{
+                for (i of members) {
+                    if (i.id == user_id){
+                        return true;
+                    }
+                    return false
+                } 
+            } 
+            try{
+                const user = verify(ctx.req.headers['verify-token'], process.env.SECRET_WORD).user;
+
+                if (!isRolesInUser(await getUserRoles(user.id), ["ADMIN"]) 
+                && !checkIfUserInMeeting(user.id, await MeetingQueries.getAllMeetingMembers(meeting_id)))
+                    throw Error("You do not have rights (basically woman)")
+
+            } catch (err){
+                throw Error("You do not have rights (basically woman)")
+            }
+
             const users = await MeetingQueries.getAllMeetingMembers(meeting_id);
 
 

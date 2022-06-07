@@ -101,7 +101,27 @@ const UserResolvers = {
             const auth = {token: token, user: user }
             return auth
         },
-        changeMyself: async() =>{
+        changeUser: async(_, {user_id, email, password,  first_name, last_name, birthday, location}, ctx) =>{
+            const user = verify(ctx.req.headers['verify-token'], process.env.SECRET_WORD).user;
+            if (!isRolesInUser(await getUserRoles(user.id), ["ADMIN"]) && user.id !== user_id ) throw Error("You do not have rights (basically woman)")
+
+            let stringKey, salt;
+            if (password) {
+                [stringKey, salt] = await passwordGenerator.generateHashedPasswordAndSalt(password);
+            }
+            const updated_user = {
+                email: email,
+                hashed_password: stringKey,
+                salt: salt,
+                first_name: first_name,
+                last_name: last_name,
+                birthday: birthday,
+                location: location 
+            }
+            await UserQueries.updateUser(user_id, updated_user)
+
+            return UserQueries.getUserById(user_id)
+
 
         },
         changeUserRoles: async(_, { id, roles }, ctx) => {
@@ -147,7 +167,7 @@ const UserResolvers = {
         },
         addNewSubscription: async (_, {user_id, subscribed_id}, ctx) =>{
             const user = verify(ctx.req.headers['verify-token'], process.env.SECRET_WORD).user;
-            if (!isRolesInUser(await getUserRoles(user.id), ["USER","ADMIN"]) && user.id !== user_id ) throw Error("You do not have rights (basically woman)")
+            if (!isRolesInUser(await getUserRoles(user.id), ["ADMIN"]) && user.id !== user_id ) throw Error("You do not have rights (basically woman)")
 
             UserQueries.insertSubcription(user_id, subscribed_id);
         }

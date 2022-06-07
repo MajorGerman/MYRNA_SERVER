@@ -12,10 +12,6 @@ const getUsersByEmail = (email) => {
     return queryTool.getMany(pool, `SELECT * FROM users WHERE email = '${email}'` );
 }
 const insertUser = async (email, stringKey, salt, first_name, last_name ,location_id, birthday) => {
-    console.log(`
-    INSERT INTO users 
-    (email, hashed_password, salt, first_name, last_name ${location_id ? ',location ': ''} ${birthday ? ',birthday ': ''}) VALUES
-    ('${email}',0x${stringKey},0x${salt},'${first_name}','${last_name}' ${location_id ? `, ${location_id} ` : '' } ${birthday ? `, '${birthday}' ` : '' })`)
     await queryTool.insert(pool,`
         INSERT INTO users 
         (email, hashed_password, salt, first_name, last_name ${location_id ? ',location ': ''} ${birthday ? ',birthday ': ''}) VALUES
@@ -47,6 +43,28 @@ const getAllSubsciptions = (user_id) => {
 const getAllSubscribed = (user_id) => {
     return queryTool.getMany(pool, `SELECT * FROM users WHERE users.id IN (SELECT user_id FROM subscriptions WHERE subscribed_id = ${user_id})`)
 }
+const updateUser = async (user_id, user) => {
+    const generateSetters = (user) => {
+        let setters = ""
+        for (i of Object.keys(user)){
+            if (user[i]){
+                if (setters == ""){
+                    setters += ` ${i} = '${user[i]}' `
+                } 
+                else if (setters != "" ){
+                    setters += ','
+                    setters += ` ${i} = '${user[i]}' `
+                }
+            }
+            
+        }
+        return setters
+    }
+    await queryTool.insert(pool, `
+        UPDATE users SET ${generateSetters(user)} WHERE id = ${user_id}
+    `)
+    
+}
 
 
 module.exports = {
@@ -62,4 +80,5 @@ module.exports = {
     insertSubcription,
     getAllSubsciptions,
     getAllSubscribed,
+    updateUser
 }

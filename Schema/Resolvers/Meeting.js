@@ -1,5 +1,6 @@
 const PostQueries = require('../../queries/MeetingQueries')
 const MeetingQueries = require('../../queries/MeetingQueries')
+const UserQueries = require('../../queries/UserQueries')
 const MeetingResolvers = {
     Query: {
         getAllMeetings: () =>{
@@ -17,7 +18,7 @@ const MeetingResolvers = {
             meeting.date = new Date(meeting.date).toDateString()
             return meeting
         },
-        inviteUserToMeeting: (_, {meeting_id, user_id}, ctx) => {
+        inviteUserToMeeting: async (_, {meeting_id, user_id}, ctx) => {
 
             const checkIfUserInMeeting = (user_id, members)=>{
                 console.log(members)
@@ -33,7 +34,7 @@ const MeetingResolvers = {
             try{
                 const user = verify(ctx.req.headers['verify-token'], process.env.SECRET_WORD).user;
 
-                if (!isRolesInUser(await getUserRoles(user.id), ["ADMIN"]) 
+                if (!isRolesInUser((await UserQueries.getAllUserRoles(user.id)), ["ADMIN"]) 
                 && !checkIfUserInMeeting(user.id, await MeetingQueries.getAllMeetingMembers(meeting_id)))
                     throw Error("You do not have rights (basically woman)")
 
@@ -72,7 +73,7 @@ const MeetingResolvers = {
             try{
                 const user = verify(ctx.req.headers['verify-token'], process.env.SECRET_WORD).user;
 
-                if (!isRolesInUser(await getUserRoles(user.id), ["ADMIN"]) 
+                if (!isRolesInUser(await UserQueries.getAllUserRoles(user.id), ["ADMIN"]) 
                 && !checkIfUserInMeeting(user.id, await MeetingQueries.getAllMeetingMembers(meeting_id)))
                     throw Error("You do not have rights (basically woman)")
 
@@ -100,7 +101,7 @@ const MeetingResolvers = {
             try{
                 const user = verify(ctx.req.headers['verify-token'], process.env.SECRET_WORD).user;
 
-                if (!isRolesInUser(await getUserRoles(user.id), ["ADMIN"]) 
+                if (!isRolesInUser(await UserQueries.getAllUserRoles(user.id), ["ADMIN"]) 
                 && !checkIfUserInMeeting(user.id, await MeetingQueries.getAllMeetingMembers(meeting_id)))
                     throw Error("You do not have rights (basically woman)")
 

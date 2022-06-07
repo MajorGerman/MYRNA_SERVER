@@ -146,6 +146,24 @@ CREATE TABLE user_imgs (
     FOREIGN KEY (user_id) REFERENCES users (id),
     FOREIGN KEY (img_id) REFERENCES images (id)
 );
+
+CREATE TABLE ratings (
+    place_id INT NOT NULL,
+    user_id INT NOT NULL,
+    rating DECIMAL(3,2) NOT NULL,
+    PRIMARY KEY (place_id, user_id) 
+);
+
+CREATE TRIGGER insert_place_rating
+    AFTER INSERT
+        ON ratings FOR EACH ROW
+        	UPDATE places SET rating = (SELECT AVG(ratings.rating) FROM ratings WHERE place_id = new.place_id)
+            
+;
+CREATE TRIGGER update_place_rating
+    AFTER UPDATE
+        ON ratings FOR EACH ROW
+        	UPDATE places SET rating = (SELECT AVG(ratings.rating) FROM ratings WHERE place_id = new.place_id)
 ALTER TABLE users
 ADD CONSTRAINT FK_UserPlace
 FOREIGN KEY (location) REFERENCES locations(id);

@@ -48,6 +48,15 @@ const getMeetingCreator = async (meeting_id) => {
 const getLastMeetingMessage = async () => {
     return await getOne(pool, `SELECT * FROM meeting_msg WHERE meeting_msg.id = (SELECT MAX(id) FROM meeting_msg)`)
 }
+const updateMeetingChief = async (meeting_id,user_id) =>{
+    await insert(pool, `UPDATE meetings SET chief = ${user_id} WHERE meetings.id = ${meeting_id}`)
+}
+const updateImportantUserMeetings = async (meeting_id, user_id) =>{
+    await insert(pool, `UPDATE user_meetings SET inportant = NOT important`)
+}
+const getUserMeetingByUserIdAndMeetingId = async (meeting_id, user_id) => {
+    return await getOne(pool, `SELECT * FROM user_meetings WHERE user_id = ${user_id} AND meeting_id = ${meeting_id}`) 
+}
 
 module.exports = {
     getAllMeetings,
@@ -63,5 +72,8 @@ module.exports = {
     changeMeeting,
     getMeetingById,
     getMeetingCreator,
-    getLastMeetingMessage
+    getLastMeetingMessage,
+    updateMeetingChief,
+    updateImportantUserMeetings,
+    getUserMeetingByUserIdAndMeetingId
 };

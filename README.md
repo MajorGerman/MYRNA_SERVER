@@ -61,19 +61,23 @@ name VARCHAR(15)
 );
 
 CREATE TABLE meetings (
-id INT PRIMARY KEY AUTO_INCREMENT,
-name VARCHAR(30) NOT NULL,
-date DATE NOT NULL ,
-type_id INT DEFAULT 1,
-status VARCHAR(30),
-creator INT NOT NULL,
-FOREIGN KEY (type_id) REFERENCES meeting_types (id),
-FOREIGN KEY (creator) REFERENCES users (id)
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    name VARCHAR(30) NOT NULL,
+    date DATE NOT NULL ,
+    type_id INT DEFAULT 1,
+    status VARCHAR(30) DEFAULT 'upcoming',
+    creator INT NOT NULL,
+    chief INT NOT NULL,
+    FOREIGN KEY (type_id) REFERENCES meeting_types (id),
+    FOREIGN KEY (creator) REFERENCES users (id),
+    FOREIGN KEY (chief) REFERENCES users (id)
 );
 
 CREATE TABLE user_meetings (
     user_id INT NOT NULL,
     meeting_id INT NOT NULL,
+    date_joined DATE NOT NULL DEFAULT NOW(),
+    important BOOLEAN NOT NULL DEFAULT false,
     PRIMARY KEY (user_id, meeting_id),
     FOREIGN KEY (user_id) REFERENCES users (id),
     FOREIGN KEY (meeting_id) REFERENCES meetings (id)
@@ -130,7 +134,7 @@ CREATE TABLE meeting_img (
 
 ALTER TABLE users
 ADD CONSTRAINT FK_UserPlace
-FOREIGN KEY (location_id) REFERENCES locations(id);
+FOREIGN KEY (location) REFERENCES locations(id);
 
 
 INSERT INTO meeting_types (name) VALUES
@@ -143,13 +147,10 @@ INSERT INTO roles (name) VALUES
 ('MANAGER'),
 ('ADMIN');
 
-DELIMITER ;
-
 CREATE TRIGGER give_user_role   
     AFTER INSERT
         ON users FOR EACH ROW
             INSERT INTO user_roles (user_id, role_id)
             VALUES (new.id, 1)
-DELIMITER ;
 
 

@@ -7,7 +7,8 @@ const MeetingTypes = gql`
         date: String,
         type: String!,
         status: String,
-        creator: User!
+        creator: User!,
+        chief: User!,
         members: [User] 
     }
     type MeetingMessage {
@@ -25,6 +26,8 @@ const MeetingTypes = gql`
         createMeetingMessage(meeting_id: Int!, author: Int!,content: String!, referenceMessageId: Int): MeetingMessage!
         deleteMeeting(meeting_id: Int!, user_id: Int!) : Boolean!
         changeMeeting(meeting_id: Int!, name: String, date: String ): Meeting!
+        makeChief(meeting_id: Int!, user_id: Int!): Boolean!
+        makeImportant(meeting_id: Int!, user_id: Int!): Boolean!
     }
 `
 

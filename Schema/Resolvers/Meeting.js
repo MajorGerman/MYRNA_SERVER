@@ -111,6 +111,14 @@ const MeetingResolvers = {
             
             MeetingQueries.changeMeeting(meeting_id, name, date);
             return MeetingQueries.getMeetingById(meeting_id)
+        },
+        makeChief: (_, {meeting_id, user_id}, ctx) =>{
+            MeetingQueries.updateMeetingChief(meeting_id, user_id)
+            return true
+        },
+        makeImportant: (_, {meeting_id, user_id}, ctx) => {
+            MeetingQueries.updateImportantUserMeetings(meeting_id, user_id)
+            return await MeetingQueries.getUserMeetingByUserIdAndMeetingId(meeting_id, user_id).important;
         }
     },
     Meeting:{

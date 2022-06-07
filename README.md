@@ -9,8 +9,7 @@ CREATE TABLE users (
     last_name VARCHAR(40) NOT NULL,
     location_id INT NULL,
     birthday DATE NULL,
-    avatar INT DEFAULT 5,
-    
+    avatar INT DEFAULT 5
 );
 
 CREATE TABLE subscriptions (
@@ -98,6 +97,7 @@ PRIMARY KEY (user_id, post_id),
 FOREIGN KEY (user_id) REFERENCES users(id),
 FOREIGN KEY (post_id) REFERENCES posts (id)
 );
+
 CREATE TABLE locations (
     id INT PRIMARY KEY AUTO_INCREMENT,
     latitude DECIMAL (12, 8),
@@ -107,6 +107,7 @@ CREATE TABLE locations (
     postal_code VARCHAR (30),
     details VARCHAR (120)
 );
+
 CREATE TABLE places (
     id INT PRIMARY KEY AUTO_INCREMENT,
     name VARCHAR(60) NOT NULL,
@@ -115,15 +116,17 @@ CREATE TABLE places (
     rating DECIMAL(3,2) DEFAULT 0,
     FOREIGN KEY (location_id) REFERENCES locations (id)
 );
+
 CREATE TABLE images (
     id INT PRIMARY KEY AUTO_INCREMENT,
     path VARCHAR (60)
-)
+);
+
 CREATE TABLE meeting_img (
-    id meeting_id INT,
+    meeting_id INT,
     img_id INT,
     FOREIGN KEY img_id REFERENCES images (id)
-)
+);
 
 ALTER TABLE users
 ADD CONSTRAINT FK_UserPlace

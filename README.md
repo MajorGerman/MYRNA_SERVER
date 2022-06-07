@@ -73,10 +73,11 @@ FOREIGN KEY (creator) REFERENCES users (id)
 );
 
 CREATE TABLE user_meetings (
-user_id INT NOT NULL,
-meeting_id INT NOT NULL,
-FOREIGN KEY (user_id) REFERENCES users (id),
-FOREIGN KEY (meeting_id) REFERENCES meetings (id)
+    user_id INT NOT NULL,
+    meeting_id INT NOT NULL,
+    PRIMARY KEY (user_id, meeting_id),
+    FOREIGN KEY (user_id) REFERENCES users (id),
+    FOREIGN KEY (meeting_id) REFERENCES meetings (id)
 );
 
 CREATE TABLE meeting_msg (

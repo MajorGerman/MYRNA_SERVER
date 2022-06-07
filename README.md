@@ -115,6 +115,16 @@ CREATE TABLE places (
     rating DECIMAL(3,2) DEFAULT 0,
     FOREIGN KEY (location_id) REFERENCES locations (id)
 );
+CREATE TABLE images (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    path VARCHAR (60)
+)
+CREATE TABLE meeting_img (
+    id meeting_id INT,
+    img_id INT,
+    FOREIGN KEY img_id REFERENCES images (id)
+)
+
 ALTER TABLE users
 ADD CONSTRAINT FK_UserPlace
 FOREIGN KEY (location_id) REFERENCES locations(id);

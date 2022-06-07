@@ -11,7 +11,7 @@ const UserTypes = gql`
         first_name: String!
         last_name: String!
         birthday: String
-        location: String
+        location: Location
         avatar: Int!
         subscriptions: [User]
         subscribed: [User]

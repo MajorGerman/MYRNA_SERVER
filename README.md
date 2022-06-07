@@ -7,7 +7,7 @@ CREATE TABLE users (
     salt BINARY(16) NOT NULL,
     first_name VARCHAR(40) NOT NULL,
     last_name VARCHAR(40) NOT NULL,
-    location_id INT NULL,
+    location INT NULL,
     birthday DATE NULL,
     avatar INT DEFAULT 5
 );

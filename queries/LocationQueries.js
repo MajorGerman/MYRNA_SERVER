@@ -14,9 +14,13 @@ const getAllPlaces = () =>{
 const getLocationByPlaceId = (id) =>{
     return getOne(pool, `SELECT * FROM locations WHERE locations.id = (SELECT location_id FROM places WHERE places.id = ${id})`)
 }
+const getLocationByUserId = (id) =>{
+    return getOne(pool, `SELECT * FROM locations WHERE locations.id = (SELECT location FROM users WHERE users.id = ${id})`)
+}
 module.exports = {
     createLocation,
     getLastLocation,
     getAllPlaces,
-    getLocationByPlaceId
+    getLocationByPlaceId,
+    getLocationByUserId
 }

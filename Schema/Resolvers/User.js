@@ -4,6 +4,7 @@ const {isRolesInUser} = require('../../tools/FindUserRolesTool');
 const UserQueries = require('../../queries/UserQueries')
 const PostQueries = require('../../queries/PostQueries')
 const MeetingQueries = require('../../queries/MeetingQueries')
+const LocationQueries = require('../../queries/LocationQueries');
 
 const getUserRoles = async (user_id) =>{
     const resp = await UserQueries.getAllUserRoles(user_id)
@@ -210,6 +211,9 @@ const UserResolvers = {
         },
         likedPosts: async (user) => {
             return PostQueries.getLikedPostByUserId(user.id)
+        },
+        location: async (user) =>{
+            return LocationQueries.getLocationByUserId(user.id)
         }
     },
     

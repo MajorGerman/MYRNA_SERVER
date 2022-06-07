@@ -17,7 +17,30 @@ const MeetingResolvers = {
             meeting.date = new Date(meeting.date).toDateString()
             return meeting
         },
-        inviteUserToMeeting: (_, {meeting_id, user_id}) => {
+        inviteUserToMeeting: (_, {meeting_id, user_id}, ctx) => {
+
+            const checkIfUserInMeeting = (user_id, members)=>{
+                console.log(members)
+                for (i of members) {
+                    console.log(i)
+                    if (i.id == user_id){
+                        
+                        return true;
+                    }
+                    return false
+                } 
+            } 
+            try{
+                const user = verify(ctx.req.headers['verify-token'], process.env.SECRET_WORD).user;
+
+                if (!isRolesInUser(await getUserRoles(user.id), ["ADMIN"]) 
+                && !checkIfUserInMeeting(user.id, await MeetingQueries.getAllMeetingMembers(meeting_id)))
+                    throw Error("You do not have rights (basically woman)")
+
+            } catch (err){
+                throw Error("You do not have rights (basically woman)")
+            }
+
             try{
                 MeetingQueries.addMeetingUser(meeting_id, user_id)
             } catch (err) {
@@ -36,8 +59,11 @@ const MeetingResolvers = {
         deleteMeeting: async (_, {meeting_id, user_id}, ctx) => {
 
             const checkIfUserInMeeting = (user_id, members)=>{
+                console.log(members)
                 for (i of members) {
+                    console.log(i)
                     if (i.id == user_id){
+                        
                         return true;
                     }
                     return false

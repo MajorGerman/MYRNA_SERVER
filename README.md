@@ -125,7 +125,7 @@ CREATE TABLE images (
 CREATE TABLE meeting_img (
     meeting_id INT,
     img_id INT,
-    FOREIGN KEY img_id REFERENCES images (id)
+    FOREIGN KEY (img_id) REFERENCES images (id)
 );
 
 ALTER TABLE users

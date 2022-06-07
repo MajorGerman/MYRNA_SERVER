@@ -83,7 +83,7 @@ const UserResolvers = {
         signin: async (_, { email, password }) => { 
             let user = await UserQueries.getUsersByEmail(email);
 
-            if (!user) throw Error('wrong email or password');
+            if (!user) throw Error('Wrong email or password');
             if (user.length == 0) throw Error('wrong email');
 
             user = user[0]
@@ -91,7 +91,7 @@ const UserResolvers = {
             try{
                 if ( !passwordGenerator.validatePassword(password, user.salt, user.hashed_password) ) throw Error('wrong email or password');
             } catch {
-                throw Error('wrong email or password');
+                throw Error('Wrong email or password');
             }
 
 

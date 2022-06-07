@@ -11,11 +11,11 @@ const getUserById = (id) =>{
 const getUsersByEmail = (email) => {
     return queryTool.getMany(pool, `SELECT * FROM users WHERE email = '${email}'` );
 }
-const insertUser = (email, stringKey, salt, first_name, last_name ,location_id) => {
+const insertUser = (email, stringKey, salt, first_name, last_name ,location_id, birthday) => {
     queryTool.insert(pool,`
         INSERT INTO users 
-        (email, hashed_password, salt, first_name, last_name ${location_id ? ',location_id ': ''}) VALUES
-        ('${email}',0x${stringKey},0x${salt},'${first_name}','${last_name}' ${location_id ? `, ${location_id} ` : '' })`)
+        (email, hashed_password, salt, first_name, last_name ${location_id ? ',location_id ': ''} ${birthday ? ',birthday ': ''}) VALUES
+        ('${email}',0x${stringKey},0x${salt},'${first_name}','${last_name}' ${location_id ? `, ${location_id} ` : '' } ${birthday ? `, ${birthday} ` : '' })`)
     
 }
 const getLastInsertedUser = () => {

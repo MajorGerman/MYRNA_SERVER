@@ -38,7 +38,7 @@ const UserResolvers = {
             
     },
     Mutation: {
-        signup: async (_,{email, first_name, last_name,password, location_id}) => {
+        signup: async (_,{email, first_name, last_name,password, location_id, birthday}) => {
             if (email.length > 50){
                 throw Error('Email is too long')
             }
@@ -63,7 +63,7 @@ const UserResolvers = {
             let [stringKey, salt] = await passwordGenerator.generateHashedPasswordAndSalt(password);
             try{
                 
-                UserQueries.insertUser(email, stringKey, salt, first_name, last_name ,location_id)
+                UserQueries.insertUser(email, stringKey, salt, first_name, last_name ,location_id, birthday)
 
             } catch (err) {
                 console.log(err)

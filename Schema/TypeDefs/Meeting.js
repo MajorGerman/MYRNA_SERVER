@@ -9,6 +9,7 @@ const MeetingTypes = gql`
         status: String,
         creator: User!,
         chief: User!,
+        places: [Place],
         members: [User] 
     }
     type MeetingMessage {
@@ -28,6 +29,7 @@ const MeetingTypes = gql`
         changeMeeting(meeting_id: Int!, name: String, date: String ): Meeting!
         makeChief(meeting_id: Int!, user_id: Int!): Boolean!
         makeImportant(meeting_id: Int!, user_id: Int!): Boolean!
+
     }
 `
 

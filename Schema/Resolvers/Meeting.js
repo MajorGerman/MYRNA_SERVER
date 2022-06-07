@@ -1,6 +1,7 @@
 const PostQueries = require('../../queries/MeetingQueries')
 const MeetingQueries = require('../../queries/MeetingQueries')
 const UserQueries = require('../../queries/UserQueries')
+const LocationQueries = require('../../queries/LocationQueries');
 const MeetingResolvers = {
     Query: {
         getAllMeetings: () =>{
@@ -112,11 +113,11 @@ const MeetingResolvers = {
             MeetingQueries.changeMeeting(meeting_id, name, date);
             return MeetingQueries.getMeetingById(meeting_id)
         },
-        makeChief: (_, {meeting_id, user_id}, ctx) =>{
+        makeChief: async (_, {meeting_id, user_id}, ctx) =>{
             MeetingQueries.updateMeetingChief(meeting_id, user_id)
             return true
         },
-        makeImportant: (_, {meeting_id, user_id}, ctx) => {
+        makeImportant: async (_, {meeting_id, user_id}, ctx) => {
             MeetingQueries.updateImportantUserMeetings(meeting_id, user_id)
             return await MeetingQueries.getUserMeetingByUserIdAndMeetingId(meeting_id, user_id).important;
         }
@@ -130,6 +131,9 @@ const MeetingResolvers = {
         },
         creator: async (meeting) => {
             return MeetingQueries.getMeetingCreator(meeting.id);
+        },
+        places: async (meeting) => {
+            return LocationQueries.getPlacesByMeetingId(meeting.id)
         }
     }
 }

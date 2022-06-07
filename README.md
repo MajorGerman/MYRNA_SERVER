@@ -131,6 +131,13 @@ CREATE TABLE meeting_img (
     img_id INT,
     FOREIGN KEY (img_id) REFERENCES images (id)
 );
+CREATE TABLE place_meetings (
+    meeting_id INT NOT NULL,
+    place_id INT NOT NULL,
+    PRIMARY KEY (meeting_id, place_id),
+    FOREIGN KEY (meeting_id) REFERENCES meetings (id),
+    FOREIGN KEY (place_id) REFERENCES places (id)
+);
 
 ALTER TABLE users
 ADD CONSTRAINT FK_UserPlace

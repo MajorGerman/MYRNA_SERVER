@@ -14,7 +14,10 @@ const LocationTypes = gql`
         id: Int!,
         name: String!,
         paradigm: String!,
-        location_id: Location!, 
+        location: Location!, 
+    }
+    type Query{
+        getAllPlaces: [Place]
     }
     type Mutation {
         createLocation(longitude: Float, latitude: Float, country: String! ,city: String!, postal_code: String!, details: String): Location!

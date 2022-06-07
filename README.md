@@ -1,15 +1,16 @@
 ## Database Query
 
 CREATE TABLE users (
-id INT PRIMARY KEY AUTO_INCREMENT,
-email VARCHAR(50) NOT NULL,
-hashed_password BINARY(16) NOT NULL,
-salt BINARY(16) NOT NULL,
-first_name VARCHAR(40) NOT NULL,
-last_name VARCHAR(40) NOT NULL,
-location VARCHAR(100) NULL,
-birthday DATE NULL,
-avatar INT DEFAULT 5
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    email VARCHAR(50) NOT NULL,
+    hashed_password BINARY(16) NOT NULL,
+    salt BINARY(16) NOT NULL,
+    first_name VARCHAR(40) NOT NULL,
+    last_name VARCHAR(40) NOT NULL,
+    location_id INT NULL,
+    birthday DATE NULL,
+    avatar INT DEFAULT 5,
+    
 );
 
 CREATE TABLE subscriptions (
@@ -113,6 +114,9 @@ CREATE TABLE places (
     rating DECIMAL(3,2) DEFAULT 0,
     FOREIGN KEY (location_id) REFERENCES locations (id)
 );
+ALTER TABLE users
+ADD CONSTRAINT FK_UserPlace
+FOREIGN KEY (location_id) REFERENCES locations(id);
 
 
 INSERT INTO meeting_types (name) VALUES

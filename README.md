@@ -89,6 +89,32 @@ FOREIGN KEY (author) REFERENCES users (id),
 FOREIGN KEY (meeting_id) REFERENCES meetings (id)
 );
 
+CREATE TABLE user_likes (
+user_id INT,
+post_id INT,
+PRIMARY KEY (user_id, post_id),
+FOREIGN KEY (user_id) REFERENCES users(id),
+FOREIGN KEY (post_id) REFERENCES posts (id)
+);
+CREATE TABLE locations (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    latitude DECIMAL (12, 8),
+    longitude DECIMAL (12,8),
+    country VARCHAR (30),
+    city VARCHAR (40),
+    postal_code VARCHAR (30),
+    details VARCHAR (120)
+);
+CREATE TABLE places (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    name VARCHAR(60) NOT NULL,
+    paradigm VARCHAR(30) NOT NULL,
+    location_id INT NOT NULL,
+    rating DECIMAL(3,2) DEFAULT 0,
+    FOREIGN KEY (location_id) REFERENCES locations (id)
+);
+
+
 INSERT INTO meeting_types (name) VALUES
 ('Hang Out'),
 ('Business'),
@@ -99,10 +125,4 @@ INSERT INTO roles (name) VALUES
 ('MANAGER'),
 ('ADMIN');
 
-CREATE TABLE user_likes (
-user_id INT,
-post_id INT,
-PRIMARY KEY (user_id, post_id),
-FOREIGN KEY (user_id) REFERENCES users(id),
-FOREIGN KEY (post_id) REFERENCES posts (id)
-);
+

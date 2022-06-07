@@ -20,11 +20,15 @@ const getLocationByUserId = (id) =>{
 const getPlacesByMeetingId = (meeting_id) =>{
     return getMany(pool, `SELECT place_id FROM place_meetings WHERE meeting_id = ${meeting_id}`)
 }
+const deleteLocation = (location_id) =>{
+    insert(pool, `DELETE FROM locations WHERE id = ${location_id}`)
+}
 module.exports = {
     createLocation,
     getLastLocation,
     getAllPlaces,
     getLocationByPlaceId,
     getLocationByUserId,
-    getPlacesByMeetingId
+    getPlacesByMeetingId,
+    deleteLocation
 }

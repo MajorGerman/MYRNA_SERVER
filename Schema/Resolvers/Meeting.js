@@ -134,6 +134,9 @@ const MeetingResolvers = {
         },
         places: async (meeting) => {
             return LocationQueries.getPlacesByMeetingId(meeting.id)
+        },
+        chief: async (meeting) =>{
+            return MeetingQueries.getChiefByMeetingId(meeting.id)
         }
     }
 }

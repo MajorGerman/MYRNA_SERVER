@@ -89,7 +89,7 @@ const PostResolvers = {
     },
     Post: {
             comments: async  (post) => {
-                return await queryTool.getMany(pool, `SELECT * FROM comments WHERE post_id = ${post.id}`)
+                return await queryTool.getMany(pool, `SELECT * FROM comments WHERE deleted = 0 AND post_id = ${post.id}`)
             },
             author: async (post) =>{
                 data = await queryTool.getOne(pool, `SELECT * FROM users WHERE id = (SELECT author FROM posts WHERE id = ${post.id})`)
@@ -105,7 +105,7 @@ const PostResolvers = {
                 return await queryTool.getOne(pool, `SELECT * FROM users WHERE id = (SELECT author FROM comments WHERE id = ${comment.id})`)
             },
             post: async (comment) => {
-                return await queryTool.getOne(pool, `SELECT * FROM posts WHERE id = ${comment.post_id}`)
+                return await queryTool.getOne(pool, `SELECT * FROM posts WHERE deleted = 0 AND id = ${comment.post_id}`)
             }
         }
     }

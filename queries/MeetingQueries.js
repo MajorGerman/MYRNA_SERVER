@@ -8,8 +8,8 @@ const getAllUserMeetings = (user_id) =>{
     return getMany(pool, `SELECT * FROM meetings WHERE id IN (SELECT meeting_id FROM user_meetings WHERE user_id = ${user_id})`)
 }
 const createNewMeeting =async (name, date, type,status, creator) =>{
-    await insert(pool, `INSERT INTO meetings (name, creator ${date ? ',date ': ''} ${type ? ',type_id ': ''} ${status ? ',status ': ''}) 
-    VALUES ('${name}', ${creator} ${date ? `, '${date}' ` : '' } ${type ? `, ${type} ` : '' } ${status ? `, ${status} ` : '' })`)
+    await insert(pool, `INSERT INTO meetings (name, creator, chief ${date ? ',date ': ''} ${type ? ',type_id ': ''} ${status ? ',status ': ''}) 
+    VALUES ('${name}', ${creator},${creator} ${date ? `, '${date}' ` : '' } ${type ? `, ${type} ` : '' } ${status ? `, ${status} ` : '' })`)
 }
 const addMeetingUser = (meeting_id, user_id) => {
     insert(pool, `INSERT INTO user_meetings (meeting_id, user_id ) 

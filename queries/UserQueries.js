@@ -15,7 +15,7 @@ const insertUser = (email, stringKey, salt, first_name, last_name ,location_id, 
     queryTool.insert(pool,`
         INSERT INTO users 
         (email, hashed_password, salt, first_name, last_name ${location_id ? ',location_id ': ''} ${birthday ? ',birthday ': ''}) VALUES
-        ('${email}',0x${stringKey},0x${salt},'${first_name}','${last_name}' ${location_id ? `, ${location_id} ` : '' } ${birthday ? `, ${birthday} ` : '' })`)
+        ('${email}',0x${stringKey},0x${salt},'${first_name}','${last_name}' ${location_id ? `, ${location_id} ` : '' } ${birthday ? `, '${birthday}' ` : '' })`)
     
 }
 const getLastInsertedUser = () => {

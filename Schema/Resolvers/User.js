@@ -84,7 +84,7 @@ const UserResolvers = {
             let user = await UserQueries.getUsersByEmail(email);
 
             if (!user) throw Error('Wrong email or password');
-            if (user.length == 0) throw Error('wrong email');
+            if (user.length == 0) throw Error('Za rossiu');
 
             user = user[0]
 

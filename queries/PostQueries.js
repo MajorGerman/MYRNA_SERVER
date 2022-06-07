@@ -10,8 +10,14 @@ const getAllUserComments = (user_id) => {
 const deletePost = (post_id) => {
     queryTool.insert(pool, `UPDATE posts SET deleted = true WHERE id = ${post_id}`)
 }
+const deleteComment = (comment_id) => {
+    queryTool.insert(pool, `UPDATE comments SET deleted = true WHERE id = ${comment_id}`)
+}
 const getPostById = (post_id) => {
     return queryTool.getOne(pool, `SELECT * FROM posts WHERE id = ${post_id}`)
+}
+const getCommentById =(comment_id) =>{
+    return queryTool.getOne(pool, `SELECT * FROM comments WHERE id = ${comment_id}`)
 }
 const getAllPosts = () =>{
     return queryTool.getMany(pool,`SELECT * FROM posts WHERE deleted = 0 ORDER BY id DESC`)
@@ -71,7 +77,9 @@ module.exports = {
     getAllUserPosts,
     getAllUserComments,
     deletePost,
+    deleteComment,
     getPostById,
+    getCommentById,
     getAllPosts,
     getPostsByUserId,
     getSubscribedPosts,

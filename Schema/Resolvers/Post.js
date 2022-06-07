@@ -77,6 +77,14 @@ const PostResolvers = {
 
             PostQueries.deletePost(post_id)
             return true;
+        },
+        deleteComment: async (_, {comment_id}, ctx) =>{
+            const user = verify(ctx.req.headers['verify-token'], process.env.SECRET_WORD).user;
+            const user_id = (await PostQueries.getCommentById(post_id)).author
+            if (!isRolesInUser(await getUserRoles(user.id), ["ADMIN"]) && user.id != user_id) throw Error("You do not have rights (basically woman)")
+
+            PostQueries.deleteComment(comment_id)
+            return true;
         }
     },
     Post: {

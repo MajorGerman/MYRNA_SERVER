@@ -81,14 +81,14 @@ CREATE TABLE user_meetings (
 );
 
 CREATE TABLE meeting_msg (
-id INT PRIMARY KEY AUTO_INCREMENT,
-author INT NOT NULL,
-meeting_id INT NOT NULL,
-reference_msg INT NOT NULL,
-content MEDIUMTEXT,
-status VARCHAR(30),
-FOREIGN KEY (author) REFERENCES users (id),
-FOREIGN KEY (meeting_id) REFERENCES meetings (id)
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    author INT NOT NULL,
+    meeting_id INT NOT NULL,
+    reference_msg INT NOT NULL,
+    content MEDIUMTEXT,
+    status VARCHAR(30),
+    FOREIGN KEY (author) REFERENCES users (id),
+    FOREIGN KEY (meeting_id) REFERENCES meetings (id)
 );
 
 CREATE TABLE user_likes (

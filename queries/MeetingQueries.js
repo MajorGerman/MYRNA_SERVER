@@ -24,8 +24,8 @@ const getMeetingType = (meeting_id) =>{
 const getAllMeetingMembers = (meeting_id) =>{
     return getMany (pool, `SELECT * FROM users WHERE id IN (SELECT user_id FROM user_meetings WHERE meeting_id = ${meeting_id})`)
 }
-const addMeetingMessage = (meeting_id, author,content, referenceMessageId) =>{
-    insert(pool, `INSERT INTO meeting_msg (meeting_id, author, content) VALUES (${meeting_id},${author},'${content}')`)
+const addMeetingMessage = async (meeting_id, author,content, referenceMessageId) =>{
+    await insert(pool, `INSERT INTO meeting_msg (meeting_id, author, content) VALUES (${meeting_id},${author},'${content}')`)
 }
 const deleteMeeting = async (meeting_id) => {
     await insert (pool, `DELETE FROM meetings WHERE id = ${meeting_id}`);
@@ -45,6 +45,9 @@ const getMeetingById = async (meeting_id) => {
 const getMeetingCreator = async (meeting_id) => {
     return getOne(pool, `SELECT * FROM users WHERE users.id = (SELECT creator FROM meetings WHERE meetings.id = ${meeting_id})`)
 }
+const getLastMeetingMessage = async () => {
+    return await getOne(pool, `SELECT * FROM meeting_msg WHERE meeting_msg.id = (SELECT MAX(id) FROM meeting_msg)`)
+}
 
 module.exports = {
     getAllMeetings,
@@ -59,5 +62,6 @@ module.exports = {
     removeMeetingUser,
     changeMeeting,
     getMeetingById,
-    getMeetingCreator
+    getMeetingCreator,
+    getLastMeetingMessage
 };

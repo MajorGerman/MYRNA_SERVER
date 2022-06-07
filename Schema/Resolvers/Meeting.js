@@ -25,12 +25,13 @@ const MeetingResolvers = {
             }
             return true
         },
-        createMeetingMessage: (_, {meeting_id, author,content, referenceMessageId}) =>{
+        createMeetingMessage: async (_, {meeting_id, author,content, referenceMessageId}) =>{
             try{
-                MeetingQueries.addMeetingMessage(meeting_id, author, content, referenceMessageId);
+                await MeetingQueries.addMeetingMessage(meeting_id, author, content, referenceMessageId);
             } catch (err){
 
             }
+            return MeetingQueries.getLastMeetingMessage()
         },
         deleteMeeting: async (_, {meeting_id, user_id}) => {
             const users = await MeetingQueries.getAllMeetingMembers(meeting_id);
@@ -52,7 +53,7 @@ const MeetingResolvers = {
             } 
             try{
                 const user = verify(ctx.req.headers['verify-token'], process.env.SECRET_WORD).user;
-                
+
                 if (!isRolesInUser(await getUserRoles(user.id), ["ADMIN"]) 
                 && !checkIfUserInMeeting(user.id, await MeetingQueries.getAllMeetingMembers(meeting_id)))
                     throw Error("You do not have rights (basically woman)")

@@ -151,7 +151,9 @@ CREATE TABLE ratings (
     place_id INT NOT NULL,
     user_id INT NOT NULL,
     rating DECIMAL(3,2) NOT NULL,
-    PRIMARY KEY (place_id, user_id) 
+    PRIMARY KEY (place_id, user_id) ,
+    FOREIGN KEY place_id REFERENCES places (id),
+    FOREIGN KEY user_id REFERENCES users (id)
 );
 
 CREATE TRIGGER insert_place_rating
@@ -164,6 +166,7 @@ CREATE TRIGGER update_place_rating
     AFTER UPDATE
         ON ratings FOR EACH ROW
         	UPDATE places SET rating = (SELECT AVG(ratings.rating) FROM ratings WHERE place_id = new.place_id)
+
 ALTER TABLE users
 ADD CONSTRAINT FK_UserPlace
 FOREIGN KEY (location) REFERENCES locations(id);

@@ -3,6 +3,7 @@ const MeetingQueries = require('../../queries/MeetingQueries')
 const UserQueries = require('../../queries/UserQueries')
 const LocationQueries = require('../../queries/LocationQueries');
 const {verify, sign} = require ('jsonwebtoken');
+const {isRolesInUser} = require('../../tools/FindUserRolesTool');
 const MeetingResolvers = {
     Query: {
         getAllMeetings: () =>{
@@ -67,6 +68,7 @@ const MeetingResolvers = {
                 } 
             } 
             const user = verify(ctx.req.headers['verify-token'], process.env.SECRET_WORD).user;
+
             console.log(await MeetingQueries.getAllMeetingMembers(meeting_id))
             if (!(isRolesInUser(await UserQueries.getAllUserRoles(user.id), ["ADMIN"]) 
             || checkIfUserInMeeting(user.id, await MeetingQueries.getAllMeetingMembers(meeting_id))))

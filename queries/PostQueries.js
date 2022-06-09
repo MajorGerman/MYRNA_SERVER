@@ -59,7 +59,7 @@ const isPostLikedByUser = async (post_id, user_id) =>{
 const insertPost = (user_id, header, content) => {
     queryTool.insert(pool, `INSERT INTO posts
             (author, header, content) VALUES
-            (${user_id}, "${header.replace("'", "''")}","${content.replace("'", "''")}")`)
+            (${user_id}, "${header.replace(`"`, `""`)}","${content.replace(`"`, `""`)}")`)
 }
 const getLastPost = () =>{
     return queryTool.getOne(pool, `SELECT * FROM posts WHERE id= (SELECT MAX(id) FROM posts)` );

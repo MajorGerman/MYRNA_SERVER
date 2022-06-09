@@ -36,6 +36,7 @@ const UserTypes = gql`
         getAllUsers: [User]
         getUserById(id: Int!): User
         me: User! 
+        getUsersByName(search:String): [User]
 
     }
     type Mutation {
@@ -47,7 +48,7 @@ const UserTypes = gql`
         changeUserRoles(id: Int!, roles: [Int]): User
         addNewSubscription(user_id: Int!, subscribed_id: Int!) : Boolean
 
-        getUsersByName(search:String): [User]
+        
     }
     
 `

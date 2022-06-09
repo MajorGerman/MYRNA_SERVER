@@ -17,7 +17,6 @@ const PostTypes = gql`
     }
     type Query{
         getPostById(id: Int!): Post
-
         getAllPosts: [Post]
         getAllUserPostById(id: Int!): [Post]
         getAllSubscribedPosts (id: Int!): [Post] 

@@ -35,6 +35,9 @@ const UserResolvers = {
             }
 
             return data;
+        },
+        getUsersByName: async (_, {search} ) =>{
+            return UserQueries.getUsersWithSimilarName(search)
         }
             
     },

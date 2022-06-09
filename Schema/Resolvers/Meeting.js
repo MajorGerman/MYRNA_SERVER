@@ -56,9 +56,7 @@ const MeetingResolvers = {
 
             const checkIfUserInMeeting = (user_id, members)=>{
                 for (i of members) {
-                    if (i.id == user_id){
-                        return true;
-                    }
+                    if (i.id == user_id) return true;
                 }
                 return false 
             } 

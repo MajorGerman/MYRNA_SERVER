@@ -11,8 +11,8 @@ const createNewMeeting =async (name, date, type,status, creator) =>{
     await insert(pool, `INSERT INTO meetings (name, creator, chief ${date ? ',date ': ''} ${type ? ',type_id ': ''} ${status ? ',status ': ''}) 
     VALUES ('${name}', ${creator},${creator} ${date ? `, '${date}' ` : '' } ${type ? `, ${type} ` : '' } ${status ? `, ${status} ` : '' })`)
 }
-const addMeetingUser = (meeting_id, user_id) => {
-    insert(pool, `INSERT INTO user_meetings (meeting_id, user_id ) 
+const addMeetingUser = async (meeting_id, user_id) => {
+    await insert(pool, `INSERT INTO user_meetings (meeting_id, user_id ) 
     VALUES (${meeting_id}, ${user_id} )`)
 }
 const getLastMeeting = async () => {

@@ -69,7 +69,7 @@ const updateUser = async (user_id, user) => {
 const getUsersWithSimilarName = async (search, levenshtein) =>{
     return await getMany(pool, `
         SELECT * FROM users 
-        WHERE CONCAT(first_name, last_name, email) LIKE '%${search}%' 
+        WHERE LOWER(CONCAT(first_name, last_name, email)) LIKE '%${search}%' 
         `)
 }
 

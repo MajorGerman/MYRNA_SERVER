@@ -52,7 +52,7 @@ const updateMeetingChief = async (meeting_id,user_id) =>{
     await insert(pool, `UPDATE meetings SET chief = ${user_id} WHERE meetings.id = ${meeting_id}`)
 }
 const updateImportantUserMeetings = async (meeting_id, user_id) =>{
-    await insert(pool, `UPDATE user_meetings SET inportant = NOT important`)
+    await insert(pool, `UPDATE user_meetings SET important = NOT important`)
 }
 const getUserMeetingByUserIdAndMeetingId = async (meeting_id, user_id) => {
     return await getOne(pool, `SELECT * FROM user_meetings WHERE user_id = ${user_id} AND meeting_id = ${meeting_id}`) 

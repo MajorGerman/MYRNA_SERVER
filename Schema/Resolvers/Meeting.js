@@ -99,13 +99,6 @@ const MeetingResolvers = {
             return MeetingQueries.getMeetingById(meeting_id)
         },
         makeChief: async (_, {meeting_id, user_id}, ctx) =>{
-
-            const checkIfUserInMeeting = (user_id, members)=>{
-                for (i of members) {
-                    if (i.id == user_id) return true;
-                }
-                return false 
-            } 
             const user = verify(ctx.req.headers['verify-token'], process.env.SECRET_WORD).user;
 
             console.log(await MeetingQueries.getMeetingById(meeting_id))

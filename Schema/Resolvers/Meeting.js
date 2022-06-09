@@ -28,14 +28,15 @@ const MeetingResolvers = {
                     if (i.id == user_id){
                         return true;
                     }
-                    return false
                 } 
+                return false
             } 
             const user = verify(ctx.req.headers['verify-token'], process.env.SECRET_WORD).user;
 
             console.log(user.id)
             console.log(await MeetingQueries.getAllMeetingMembers(meeting_id))
             console.log(checkIfUserInMeeting(user.id, await MeetingQueries.getAllMeetingMembers(meeting_id)))
+
             if (!(isRolesInUser(await UserQueries.getAllUserRoles(user.id), ["ADMIN"]) 
             || checkIfUserInMeeting(user.id, await MeetingQueries.getAllMeetingMembers(meeting_id))))
                 throw Error("You do not have rights (basically woman)")
@@ -60,11 +61,10 @@ const MeetingResolvers = {
             const checkIfUserInMeeting = (user_id, members)=>{
                 for (i of members) {
                     if (i.id == user_id){
-                        
                         return true;
                     }
-                    return false
-                } 
+                }
+                return false 
             } 
             const user = verify(ctx.req.headers['verify-token'], process.env.SECRET_WORD).user;
 

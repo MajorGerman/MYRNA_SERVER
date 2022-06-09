@@ -13,11 +13,11 @@ CREATE TABLE users (
 );
 
 CREATE TABLE subscriptions (
-user_id INT,
-subscribed_id INT,
-FOREIGN KEY (user_id) REFERENCES users (id),
-FOREIGN KEY (subscribed_id) REFERENCES users (id),
-PRIMARY KEY (user_id, subscribed_id)
+    user_id INT,
+    subscribed_id INT,
+    FOREIGN KEY (user_id) REFERENCES users (id),
+    FOREIGN KEY (subscribed_id) REFERENCES users (id),
+    PRIMARY KEY (user_id, subscribed_id)
 );
 
 CREATE TABLE posts (
@@ -43,21 +43,21 @@ CREATE TABLE comments (
 );
 
 CREATE TABLE roles (
-id INT PRIMARY KEY AUTO_INCREMENT,
-name VARCHAR(30)
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    name VARCHAR(30)
 );
 
 CREATE TABLE user_roles (
-user_id INT,
-role_id INT,
-FOREIGN KEY (user_id) REFERENCES users (id),
-FOREIGN KEY (role_id) REFERENCES roles (id),
-PRIMARY KEY (user_id, role_id)
+    user_id INT,
+    role_id INT,
+    FOREIGN KEY (user_id) REFERENCES users (id),
+    FOREIGN KEY (role_id) REFERENCES roles (id),
+    PRIMARY KEY (user_id, role_id)
 );
 
 CREATE TABLE meeting_types(
-id INT PRIMARY KEY AUTO_INCREMENT,
-name VARCHAR(15)
+	id INT PRIMARY KEY AUTO_INCREMENT,
+	name VARCHAR(15)
 );
 
 CREATE TABLE meetings (
@@ -131,6 +131,7 @@ CREATE TABLE meeting_img (
     img_id INT,
     FOREIGN KEY (img_id) REFERENCES images (id)
 );
+
 CREATE TABLE place_meetings (
     meeting_id INT NOT NULL,
     place_id INT NOT NULL,
@@ -152,40 +153,38 @@ CREATE TABLE ratings (
     user_id INT NOT NULL,
     rating DECIMAL(3,2) NOT NULL,
     PRIMARY KEY (place_id, user_id) ,
-    FOREIGN KEY place_id REFERENCES places (id),
-    FOREIGN KEY user_id REFERENCES users (id)
+    FOREIGN KEY (place_id) REFERENCES places (id),
+    FOREIGN KEY (user_id) REFERENCES users (id)
 );
 
 CREATE TRIGGER insert_place_rating
     AFTER INSERT
         ON ratings FOR EACH ROW
-        	UPDATE places SET rating = (SELECT AVG(ratings.rating) FROM ratings WHERE place_id = new.place_id)
+        	UPDATE places SET rating = (SELECT AVG(ratings.rating) FROM ratings WHERE place_id = new.place_id);
             
-;
 CREATE TRIGGER update_place_rating
     AFTER UPDATE
         ON ratings FOR EACH ROW
-        	UPDATE places SET rating = (SELECT AVG(ratings.rating) FROM ratings WHERE place_id = new.place_id)
+        	UPDATE places SET rating = (SELECT AVG(ratings.rating) FROM ratings WHERE place_id = new.place_id);
+
 
 ALTER TABLE users
-ADD CONSTRAINT FK_UserPlace
-FOREIGN KEY (location) REFERENCES locations(id);
+    ADD CONSTRAINT FK_UserPlace
+    	FOREIGN KEY (location) REFERENCES locations(id);
 
 
 INSERT INTO meeting_types (name) VALUES
-('Hang Out'),
-('Business'),
-('Date');
+    ('Hang Out'),
+    ('Business'),
+    ('Date');
 
 INSERT INTO roles (name) VALUES
-('USER'),
-('MANAGER'),
-('ADMIN');
+    ('USER'),
+    ('MANAGER'),
+    ('ADMIN');
 
 CREATE TRIGGER give_user_role   
     AFTER INSERT
         ON users FOR EACH ROW
             INSERT INTO user_roles (user_id, role_id)
-            VALUES (new.id, 1)
-
-
+            VALUES (new.id, 1);

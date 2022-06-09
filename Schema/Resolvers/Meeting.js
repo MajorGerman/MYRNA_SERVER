@@ -108,7 +108,7 @@ const MeetingResolvers = {
             } 
             const user = verify(ctx.req.headers['verify-token'], process.env.SECRET_WORD).user;
 
-            console.log(MeetingQueries.getMeetingById(meeting_id).chief)
+            console.log(MeetingQueries.getMeetingById(meeting_id))
             if (!(isRolesInUser(await UserQueries.getAllUserRoles(user.id), ["ADMIN"]) 
             || (MeetingQueries.getMeetingById(meeting_id).chief == user.id)))
                 throw Error("You do not have rights (basically woman)")

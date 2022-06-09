@@ -8,7 +8,6 @@ const LocationQueries = require('../../queries/LocationQueries');
 
 const getUserRoles = async (user_id) =>{
     const resp = await UserQueries.getAllUserRoles(user_id)
-    console.log(resp)
     const roles = [];
     for (i of resp){
         roles.push (i.name)
@@ -37,7 +36,7 @@ const UserResolvers = {
             return data;
         },
         getUsersByName: async (_, {search} ) =>{
-            if (search.trim() == "") return null;
+            if (search.trim() == "") return [];
             return UserQueries.getUsersWithSimilarName(search.trim().toLowerCase())
         }
             

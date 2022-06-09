@@ -37,7 +37,7 @@ const UserResolvers = {
             return data;
         },
         getUsersByName: async (_, {search} ) =>{
-            if (search == "") return null;
+            if (search.trim() == "") return null;
             return UserQueries.getUsersWithSimilarName(search.trim().toLowerCase())
         }
             

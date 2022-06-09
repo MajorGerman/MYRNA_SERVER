@@ -111,7 +111,7 @@ const MeetingResolvers = {
         },
         makeImportant: async (_, {meeting_id, user_id}, ctx) => {
             MeetingQueries.updateImportantUserMeetings(meeting_id, user_id)
-            return await MeetingQueries.getUserMeetingByUserIdAndMeetingId(meeting_id, user_id).important;
+            return true;
         }
     },
     Meeting:{

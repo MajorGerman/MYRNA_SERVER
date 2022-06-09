@@ -40,9 +40,9 @@ const MeetingResolvers = {
             try{
                 await MeetingQueries.addMeetingUser(meeting_id, user_id)
             } catch (err) {
-                return false
+                return null
             }
-            return true
+            return UserQueries.getUserById(user_id)
         },
         createMeetingMessage: async (_, {meeting_id, author,content, referenceMessageId}) =>{
             try{

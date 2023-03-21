@@ -60,6 +60,9 @@ const getUserMeetingByUserIdAndMeetingId = async (meeting_id, user_id) => {
 const getChiefByMeetingId = async (meeting_id) =>{
     return await getOne (pool, `SELECT * FROM users WHERE users.id = (SELECT chief FROM meetings WHERE meetings.id = ${meeting_id})`)
 }
+const getAllMeetingMessages = async (meeting_id) => {
+    return await getMany (pool, `SELECT * FROM meeting_msg WHERE meeting_id = ${meeting_id}`)
+}
 
 module.exports = {
     getAllMeetings,
@@ -79,5 +82,6 @@ module.exports = {
     updateMeetingChief,
     updateImportantUserMeetings,
     getUserMeetingByUserIdAndMeetingId,
-    getChiefByMeetingId
+    getChiefByMeetingId,
+    getAllMeetingMessages
 };

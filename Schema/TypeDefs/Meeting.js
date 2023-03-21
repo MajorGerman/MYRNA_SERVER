@@ -10,7 +10,8 @@ const MeetingTypes = gql`
         creator: User!,
         chief: User!,
         places: [Place],
-        members: [User] 
+        members: [User],
+        messages: [MeetingMessage]
     }
     type MeetingMessage {
         id: Int!,

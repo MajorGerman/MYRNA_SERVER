@@ -130,6 +130,9 @@ const MeetingResolvers = {
         },
         chief: async (meeting) =>{
             return MeetingQueries.getChiefByMeetingId(meeting.id)
+        },
+        messages: async (meeting) => {
+            return MeetingQueries.getAllMeetingMessages(meeting.id)
         }
     }
 }

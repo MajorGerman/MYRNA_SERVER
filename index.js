@@ -46,3 +46,5 @@ const startApolloServer = async (schema) => {
 }
 
 startApolloServer(schema);
+
+//Very important comment. DO NOT DELETE
